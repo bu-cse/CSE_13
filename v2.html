@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BU CSE Batch-13 — Ballistic-15</title>
+<meta name="description" content="Home for the CSE Batch-13 (Ballistic-15) community at University of Barishal — notes, resources, projects and the batch roster.">
+
+<!-- Favicon (inline, no external request) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23223466'/%3E%3Ctext x='50' y='68' font-size='54' font-family='monospace' fill='%23F2C572' text-anchor='middle'%3E13%3C/text%3E%3C/svg%3E">
+
+<!-- Fonts: Space Grotesk (display), Inter (body), IBM Plex Mono (utility/code), Noto Sans Bengali (Bangla names) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+
+<style>
+  :root{
+    --ink:#1B1D29;
+    --muted:#6B6F7A;
+    --paper:#FAFAF7;
+    --surface:#FFFFFF;
+    --line:#E4E2DC;
+    --navy:#223466;
+    --navy-deep:#17284D;
+    --amber:#C98A2B;
+    --amber-soft:#F2C572;
+    --mono-bg:#141A2E;
+    --mono-text:#D7DBE8;
+    --mono-key:#8FB4FF;
+    --mono-str:#F2C572;
+    --mono-num:#7FD1A8;
+    --success:#3C8B5B;
+    --radius:10px;
+    --shadow:0 1px 2px rgba(20,20,30,.04), 0 8px 24px rgba(20,20,30,.06);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+  }
+
+  body{
+    font-family:'Inter', 'Noto Sans Bengali', sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+
+  a{ color:inherit; }
+  :focus-visible{ outline:2px solid var(--navy); outline-offset:2px; border-radius:4px; }
+
+  button{ font-family:inherit; background:none; border:none; cursor:pointer; color:inherit; }
+
+  /* ===== NAV ===== */
+  nav{
+    background:var(--surface);
+    border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:1000;
+  }
+  .nav-container{
+    max-width:1160px; margin:0 auto; padding:14px 24px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .nav-logo{
+    display:flex; align-items:center; gap:10px;
+    font-weight:600; font-size:1rem; letter-spacing:.2px;
+  }
+  .nav-logo .mark{
+    width:30px; height:30px; border-radius:7px; background:var(--navy);
+    color:var(--amber-soft); font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:.8rem;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .nav-logo .tag{ color:var(--muted); font-size:.78rem; font-family:'IBM Plex Mono', monospace; margin-left:2px; }
+
+  .nav-links{ display:flex; gap:6px; list-style:none; align-items:center; }
+  .nav-links button{
+    color:var(--muted); font-size:.88rem; font-weight:500; padding:8px 12px; border-radius:7px;
+    transition:color .15s, background .15s;
+  }
+  .nav-links button:hover{ color:var(--ink); background:#F1EFE9; }
+  .nav-links button.active{ color:var(--navy); font-weight:600; }
+
+  .hamburger{ display:none; font-size:1.2rem; color:var(--ink); padding:6px; }
+
+  /* ===== HERO ===== */
+  .hero{
+    max-width:1160px; margin:0 auto; padding:64px 24px 56px;
+    display:grid; grid-template-columns:1.1fr 1fr; gap:56px; align-items:center;
+  }
+  .hero-eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:.78rem; letter-spacing:.08em;
+    color:var(--navy); text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:8px;
+  }
+  .hero-eyebrow .dot{ width:6px; height:6px; border-radius:50%; background:var(--success); display:inline-block; }
+  .hero h1{
+    font-family:'Space Grotesk', sans-serif; font-weight:700;
+    font-size:2.7rem; line-height:1.08; letter-spacing:-.01em; color:var(--ink);
+  }
+  .hero h1 .accent{ color:var(--navy); }
+  .hero p.lede{ margin-top:16px; color:var(--muted); font-size:1.02rem; max-width:46ch; }
+  .hero-stats{ display:flex; gap:28px; margin-top:28px; }
+  .stat{ font-family:'IBM Plex Mono', monospace; }
+  .stat .n{ font-size:1.3rem; font-weight:600; color:var(--ink); }
+  .stat .l{ font-size:.75rem; color:var(--muted); }
+
+  /* Signature: manifest card */
+  .manifest{
+    background:var(--mono-bg); border-radius:14px; padding:0; overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  .manifest-bar{
+    display:flex; align-items:center; gap:8px; padding:12px 16px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .manifest-bar .dots{ display:flex; gap:6px; }
+  .manifest-bar .dots span{ width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,.18); }
+  .manifest-bar .fname{ font-family:'IBM Plex Mono', monospace; font-size:.76rem; color:rgba(255,255,255,.5); margin-left:6px; }
+  .manifest pre{
+    font-family:'IBM Plex Mono', monospace; font-size:.86rem; line-height:1.9;
+    padding:20px 22px; color:var(--mono-text); overflow-x:auto;
+  }
+  .manifest .k{ color:var(--mono-key); }
+  .manifest .s{ color:var(--mono-str); }
+  .manifest .num{ color:var(--mono-num); }
+  .manifest .p{ color:rgba(255,255,255,.35); }
+
+  @media (max-width:860px){
+    .hero{ grid-template-columns:1fr; padding-top:40px; gap:36px; }
+    .hero h1{ font-size:2.1rem; }
+  }
+
+  /* ===== SECTION SHELL ===== */
+  .section{ max-width:1160px; margin:0 auto; padding:52px 24px; }
+  .section + .section{ border-top:1px solid var(--line); }
+  .section-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:28px; gap:16px; flex-wrap:wrap; }
+  .section-head h2{ font-family:'Space Grotesk', sans-serif; font-size:1.4rem; font-weight:600; }
+  .section-head .count{ font-family:'IBM Plex Mono', monospace; font-size:.8rem; color:var(--muted); }
+
+  /* ===== QUICK LINK CARDS ===== */
+  .cards-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:14px; }
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px; text-align:left; display:flex; gap:14px; align-items:flex-start;
+    transition:border-color .15s, transform .15s;
+    text-decoration:none;
+  }
+  .card:hover{ border-color:var(--navy); transform:translateY(-2px); }
+  .card i{ font-size:1.05rem; color:var(--navy); margin-top:2px; width:20px; text-align:center; }
+  .card h3{ font-size:.98rem; font-weight:600; margin-bottom:4px; }
+  .card p{ font-size:.84rem; color:var(--muted); }
+
+  /* ===== ANNOUNCEMENTS (timeline — order is meaningful here) ===== */
+  .timeline{ position:relative; padding-left:26px; }
+  .timeline::before{ content:''; position:absolute; left:5px; top:6px; bottom:6px; width:1px; background:var(--line); }
+  .tl-item{ position:relative; padding-bottom:26px; }
+  .tl-item:last-child{ padding-bottom:0; }
+  .tl-item::before{
+    content:''; position:absolute; left:-26px; top:5px; width:9px; height:9px; border-radius:50%;
+    background:var(--surface); border:2px solid var(--navy);
+  }
+  .tl-date{ font-family:'IBM Plex Mono', monospace; font-size:.76rem; color:var(--muted); margin-bottom:4px; }
+  .tl-item h3{ font-size:.98rem; font-weight:600; margin-bottom:4px; }
+  .tl-item p{ font-size:.9rem; color:var(--muted); max-width:60ch; }
+
+  /* ===== PARTICIPANTS ===== */
+  .search-row{ display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+  .search-box{
+    flex:1; max-width:320px; display:flex; align-items:center; gap:8px;
+    border:1px solid var(--line); border-radius:8px; padding:8px 12px; background:var(--surface);
+  }
+  .search-box i{ color:var(--muted); font-size:.85rem; }
+  .search-box input{
+    border:none; outline:none; font-family:inherit; font-size:.88rem; width:100%; background:transparent; color:var(--ink);
+  }
+  .table-container{
+    border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:var(--surface);
+  }
+  table{ width:100%; border-collapse:collapse; }
+  th{
+    background:var(--paper); color:var(--muted); padding:10px 18px; text-align:left;
+    font-size:.72rem; font-family:'IBM Plex Mono', monospace; letter-spacing:.06em; text-transform:uppercase;
+    border-bottom:1px solid var(--line);
+  }
+  td{ padding:11px 18px; border-bottom:1px solid var(--line); font-size:.92rem; }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:hover td{ background:#FBFAF6; }
+  .serial-no{ font-family:'IBM Plex Mono', monospace; color:var(--muted); width:44px; }
+  .no-results{ padding:24px 18px; color:var(--muted); font-size:.9rem; text-align:center; }
+
+  /* ===== MARKDOWN PAGE VIEW ===== */
+  .markdown-content{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:34px 40px; line-height:1.8;
+  }
+  .markdown-content h1{ font-family:'Space Grotesk',sans-serif; color:var(--ink); font-size:1.7rem; margin:0 0 14px; }
+  .markdown-content h2{ font-family:'Space Grotesk',sans-serif; color:var(--navy); font-size:1.3rem; margin:22px 0 10px; border-bottom:1px solid var(--line); padding-bottom:8px; }
+  .markdown-content h3{ color:var(--ink); font-size:1.05rem; margin:16px 0 8px; }
+  .markdown-content p{ margin:10px 0; color:var(--ink); }
+  .markdown-content ul, .markdown-content ol{ margin:10px 0 10px 22px; }
+  .markdown-content a{ color:var(--navy); text-decoration:underline; text-underline-offset:2px; }
+  .markdown-content code{ font-family:'IBM Plex Mono',monospace; background:var(--paper); padding:2px 6px; border-radius:4px; font-size:.86rem; }
+  .markdown-content pre{ background:var(--mono-bg); color:var(--mono-text); padding:16px 20px; border-radius:8px; overflow-x:auto; margin:14px 0; }
+  .markdown-content pre code{ background:none; color:inherit; padding:0; }
+  .markdown-content table{ width:100%; border-collapse:collapse; margin:14px 0; }
+  .markdown-content th{ background:var(--navy); color:#fff; padding:9px 14px; text-transform:none; letter-spacing:0; font-family:'Inter',sans-serif; font-size:.85rem; }
+  .markdown-content td{ padding:9px 14px; }
+  .markdown-content blockquote{ border-left:3px solid var(--navy); padding:8px 18px; margin:14px 0; background:var(--paper); color:var(--muted); }
+  .markdown-content img{ max-width:100%; border-radius:8px; margin:10px 0; }
+  .txt-block{ white-space:pre-wrap; font-family:'IBM Plex Mono', monospace; font-size:.88rem; background:var(--mono-bg); color:var(--mono-text); padding:22px 24px; border-radius:8px; line-height:1.8; }
+
+  .loading{ text-align:center; padding:60px 20px; color:var(--muted); }
+  .loading i{ font-size:1.4rem; animation:spin 1s linear infinite; }
+  @keyframes spin{ from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
+
+  .back-btn{
+    display:inline-flex; align-items:center; gap:8px; margin-bottom:18px; padding:8px 14px;
+    background:var(--surface); border:1px solid var(--line); border-radius:8px; font-size:.86rem; font-weight:500;
+    transition:border-color .15s;
+  }
+  .back-btn:hover{ border-color:var(--navy); }
+
+  /* ===== FOOTER ===== */
+  footer{ border-top:1px solid var(--line); padding:36px 24px; }
+  .footer-inner{ max-width:1160px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+  .footer-links{ display:flex; gap:22px; list-style:none; flex-wrap:wrap; }
+  .footer-links button{ color:var(--muted); font-size:.85rem; }
+  .footer-links button:hover{ color:var(--ink); }
+  .social-icons{ display:flex; gap:16px; }
+  .social-icons a{ color:var(--muted); font-size:1.05rem; transition:color .15s; }
+  .social-icons a:hover{ color:var(--navy); }
+  footer .fine{ font-size:.78rem; color:var(--muted); margin-top:14px; text-align:center; }
+
+  @media (max-width:768px){
+    .nav-links{
+      display:none; flex-direction:column; align-items:stretch; position:absolute; top:100%; left:0; right:0;
+      background:var(--surface); border-bottom:1px solid var(--line); padding:8px; gap:2px;
+    }
+    .nav-links.active{ display:flex; }
+    .nav-links button{ text-align:left; width:100%; }
+    .hamburger{ display:block; }
+    .section-head{ flex-direction:column; align-items:flex-start; }
+    .markdown-content{ padding:22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Reusable home content, cloned into #mainContent on load and on "Home" navigation.
+     Single source of truth — avoids the old bug where the home markup was duplicated
+     in two places and could drift out of sync. -->
+<template id="homeTemplate">
+  <section class="hero" id="home">
+    <div>
+      <p class="hero-eyebrow"><span class="dot"></span> University of Barishal · Dept. of CSE</p>
+      <h1>Batch 13 — <span class="accent">Ballistic-15</span></h1>
+      <p class="lede">The shared home base for our batch: notes, resources, project showcase and the full roster, kept in one place for the next four years.</p>
+      <div class="hero-stats">
+        <div class="stat"><div class="n">43</div><div class="l">members</div></div>
+        <div class="stat"><div class="n">04</div><div class="l">years</div></div>
+        <div class="stat"><div class="n">01</div><div class="l">batch</div></div>
+      </div>
+    </div>
+    <div class="manifest" aria-hidden="true">
+      <div class="manifest-bar">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span class="fname">batch.json</span>
+      </div>
+      <pre>{
+  <span class="k">"university"</span>: <span class="s">"Barishal"</span>,
+  <span class="k">"department"</span>: <span class="s">"CSE"</span>,
+  <span class="k">"batch"</span>: <span class="num">13</span>,
+  <span class="k">"callsign"</span>: <span class="s">"Ballistic-15"</span>,
+  <span class="k">"members"</span>: <span class="num">43</span>,
+  <span class="k">"founded"</span>: <span class="s">"2026-06-09"</span>
+<span class="p">}</span></pre>
+    </div>
+  </section>
+
+  <div class="section" id="quick-links">
+    <div class="section-head"><h2>Quick links</h2></div>
+    <div class="cards-grid">
+      <button class="card" data-nav="participants/participant-list.txt">
+        <i class="fas fa-users"></i>
+        <div><h3>Participant list</h3><p>All 43 batch members</p></div>
+      </button>
+      <button class="card" data-nav="resources/README.md">
+        <i class="fas fa-book"></i>
+        <div><h3>Study resources</h3><p>Books, links, learning material</p></div>
+      </button>
+      <button class="card" data-nav="notes/README.md">
+        <i class="fas fa-note-sticky"></i>
+        <div><h3>Course notes</h3><p>Organized by semester</p></div>
+      </button>
+      <button class="card" data-nav="projects/README.md">
+        <i class="fas fa-code-branch"></i>
+        <div><h3>Projects</h3><p>Group and individual work</p></div>
+      </button>
+      <a class="card" id="githubCard" href="#" target="_blank" rel="noopener noreferrer">
+        <i class="fab fa-github"></i>
+        <div><h3>GitHub repository</h3><p>Contribute to the batch repo</p></div>
+      </a>
+      <button class="card" data-nav="CONTRIBUTING.md">
+        <i class="fas fa-handshake"></i>
+        <div><h3>Contribution guide</h3><p>How to add or edit content</p></div>
+      </button>
+    </div>
+  </div>
+
+  <div class="section" id="announcements">
+    <div class="section-head"><h2>Announcements</h2></div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-date">June 22, 2026</div>
+        <h3>3rd merit list published</h3>
+        <p>Check the GST website for updates — final admission is expected soon.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">June 15, 2026</div>
+        <h3>Primary admission fee</h3>
+        <p>Primary admission fee (৳5,000) window: June 15–17. Documents due June 18.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">June 13, 2026</div>
+        <h3>Group decision poll</h3>
+        <p>Per the poll result, this stays our main discussion group for the next four years.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">June 9, 2026</div>
+        <h3>Group created</h3>
+        <p>Welcome to BU CSE Batch-13. Group renamed to "CSE (Batch-13)-BU 15" by Kazi Sadrif Sanve.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="participants">
+    <div class="section-head">
+      <h2>Batch roster</h2>
+      <span class="count mono" id="rosterCount">43 members</span>
+    </div>
+    <div class="search-row">
+      <div class="search-box">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="text" id="participantSearch" placeholder="Search a name…" aria-label="Search the roster">
+      </div>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead><tr><th>#</th><th>Name</th></tr></thead>
+        <tbody id="participantTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <div class="nav-container">
+    <button class="nav-logo" id="navHomeBtn" aria-label="Go to home">
+      <span class="mark">13</span> BU CSE <span class="tag">batch-13</span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><button data-nav="" id="navHome" class="active">Home</button></li>
+      <li><button data-nav="README.md" id="navReadme">About</button></li>
+      <li><button data-nav="resources/README.md" id="navResources">Resources</button></li>
+      <li><button data-nav="notes/README.md" id="navNotes">Notes</button></li>
+      <li><button data-nav="projects/README.md" id="navProjects">Projects</button></li>
+      <li><button data-nav="CONTRIBUTING.md" id="navContribute">Contribute</button></li>
+      <li><button id="navParticipants">Participants</button></li>
+    </ul>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu" aria-expanded="false">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
+</nav>
+
+<main id="mainContent"></main>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <span class="mono" style="font-size:.85rem;color:var(--muted)">BU CSE Batch-13</span>
+    <ul class="footer-links">
+      <li><button data-nav="README.md">About</button></li>
+      <li><button id="footerParticipants">Participants</button></li>
+      <li><button data-nav="resources/README.md">Resources</button></li>
+      <li><button data-nav="CONTRIBUTING.md">Contribute</button></li>
+    </ul>
+    <div class="social-icons">
+      <!-- Replace href="#" below with your batch's real links -->
+      <a href="#" aria-label="Facebook group" title="Facebook"><i class="fab fa-facebook"></i></a>
+      <a href="#" aria-label="GitHub repository" title="GitHub"><i class="fab fa-github"></i></a>
+      <a href="#" aria-label="Discord server" title="Discord"><i class="fab fa-discord"></i></a>
+      <a href="#" aria-label="YouTube channel" title="YouTube"><i class="fab fa-youtube"></i></a>
+    </div>
+  </div>
+  <p class="fine">Made by BU CSE Batch-13, University of Barishal — © <span id="year"></span> Ballistic-15</p>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---- Config: set your real GitHub repo path once, used everywhere ----
+  const GITHUB_REPO = "YOUR_USERNAME/BU-CSE-Batch-13"; // ← change this one line
+
+  const participants = [
+    "Shreoshi Roy Rayte", "Urmi Sarker", "Aysha Amman Maria",
+    "মো. আরাফাত রহমান নাহিদ", "Mehraz Uddin Showrov", "Mona Roy",
+    "Naimul Islam", "Biton Mondol", "Mehraj Hossain Mishal",
+    "আকাশ বিশ্বাস", "Fatima Afrin", "Disha Mondal",
+    "Musfika Usha", "Ifad Ul Hasan", "Al Shahariar Tamim",
+    "Rupuntor Abir", "Resma Akter", "Manik Halder",
+    "AbDul KaDer", "Riadul Hassan Rupok", "Tanvir Alom Sifat",
+    "Morsalin Mahin", "Tarannum Tannu", "Tasnuva Samia",
+    "Tajrian Tasin", "Kazi Sadrif Sanve", "Mohsina Akter",
+    "Sajjad Ullah", "Gopal Podder Ovi", "P R O Hor",
+    "Al Amin Hawlader", "Md Ashikur Rahman Siam", "Dî  Šhâ",
+    "Md Neon", "Shahriar Abir", "Gourob Paul Soumik",
+    "R H Rasib", "Serajum Munira", "MD Tasib Mahmud Nîløy",
+    "Afrin Antora", "Imran Hasan", "Musfika Hasan",
+    "Sojib Uddin"
+  ];
+
+  const navFileMap = {
+    "README.md": "navReadme",
+    "resources/README.md": "navResources",
+    "notes/README.md": "navNotes",
+    "projects/README.md": "navProjects",
+    "CONTRIBUTING.md": "navContribute",
+    "participants/participant-list.txt": "navParticipants"
+  };
+
+  const mainEl = document.getElementById("mainContent");
+  const navLinksEl = document.getElementById("navLinks");
+  const hamburgerBtn = document.getElementById("hamburgerBtn");
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  function closeMobileMenu(){
+    navLinksEl.classList.remove("active");
+    hamburgerBtn.setAttribute("aria-expanded", "false");
+  }
+
+  hamburgerBtn.addEventListener("click", () => {
+    const isOpen = navLinksEl.classList.toggle("active");
+    hamburgerBtn.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  function escapeHtml(text){
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function setActiveNav(activeId){
+    document.querySelectorAll(".nav-links button").forEach(el => el.classList.remove("active"));
+    if (activeId){
+      const el = document.getElementById(activeId);
+      if (el) el.classList.add("active");
+    }
+  }
+
+  function renderRoster(filter){
+    const tbody = document.getElementById("participantTableBody");
+    const countEl = document.getElementById("rosterCount");
+    if (!tbody) return;
+    const q = (filter || "").trim().toLowerCase();
+    const filtered = q
+      ? participants.map((name, i) => ({ name, i })).filter(p => p.name.toLowerCase().includes(q))
+      : participants.map((name, i) => ({ name, i }));
+
+    if (countEl) countEl.textContent = q ? `${filtered.length} of ${participants.length}` : `${participants.length} members`;
+
+    if (filtered.length === 0){
+      tbody.innerHTML = `<tr><td colspan="2" class="no-results">No name matches "${escapeHtml(filter)}".</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = filtered.map(p => `
+      <tr>
+        <td class="serial-no">${String(p.i + 1).padStart(2, "0")}</td>
+        <td>${escapeHtml(p.name)}</td>
+      </tr>
+    `).join("");
+  }
+
+  function wireHomeInteractions(){
+    const searchInput = document.getElementById("participantSearch");
+    if (searchInput){
+      searchInput.addEventListener("input", (e) => renderRoster(e.target.value));
+    }
+    const githubCard = document.getElementById("githubCard");
+    if (githubCard) githubCard.href = `https://github.com/${GITHUB_REPO}`;
+
+    renderRoster("");
+  }
+
+  function showHome(skipScroll){
+    const tpl = document.getElementById("homeTemplate");
+    mainEl.innerHTML = "";
+    mainEl.appendChild(tpl.content.cloneNode(true));
+    wireHomeInteractions();
+    setActiveNav("navHome");
+    if (!skipScroll) window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function scrollToParticipants(){
+    const isHome = !!document.getElementById("participants");
+    if (!isHome) showHome(true);
+    requestAnimationFrame(() => {
+      const target = document.getElementById("participants");
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      setActiveNav("navParticipants");
+    });
+  }
+
+  async function loadPage(filePath){
+    mainEl.innerHTML = `<div class="section"><div class="loading"><i class="fas fa-spinner"></i><p style="margin-top:12px">Loading ${escapeHtml(filePath)}…</p></div></div>`;
+
+    try{
+      if (location.protocol === "file:"){
+        throw new Error(
+          "This page is open directly as a local file, so the browser blocks fetching other files (CORS). " +
+          "Serve the folder over a local server (e.g. `npx serve` or VS Code's Live Server) or open it via GitHub Pages instead."
+        );
+      }
+
+      const response = await fetch(filePath);
+      if (!response.ok) throw new Error(`File not found (HTTP ${response.status})`);
+      const text = await response.text();
+
+      const htmlContent = filePath.endsWith(".md")
+        ? marked.parse(text)
+        : `<div class="txt-block">${escapeHtml(text)}</div>`;
+
+      mainEl.innerHTML = `
+        <div class="section">
+          <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> Back to home</button>
+          <div class="markdown-content">${htmlContent}</div>
+        </div>
+      `;
+      document.getElementById("backBtn").addEventListener("click", () => showHome());
+      setActiveNav(navFileMap[filePath] || "");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+    }catch(error){
+      mainEl.innerHTML = `
+        <div class="section">
+          <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> Back to home</button>
+          <div class="markdown-content">
+            <h2>Couldn't load this page</h2>
+            <p><code>${escapeHtml(filePath)}</code> — ${escapeHtml(error.message)}</p>
+          </div>
+        </div>
+      `;
+      document.getElementById("backBtn").addEventListener("click", () => showHome());
+    }
+  }
+
+  // Central click handler for every nav/card button (event delegation —
+  // avoids relying on many inline onclick attributes scattered across the file).
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest("[data-nav]");
+    if (el){
+      const path = el.getAttribute("data-nav");
+      closeMobileMenu();
+      if (path === "") showHome();
+      else loadPage(path);
+      return;
+    }
+    if (e.target.closest("#navHomeBtn")){ closeMobileMenu(); showHome(); return; }
+    if (e.target.closest("#navParticipants") || e.target.closest("#footerParticipants")){
+      closeMobileMenu(); scrollToParticipants(); return;
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", () => showHome(true));
+})();
+</script>
+
+</body>
+</html>

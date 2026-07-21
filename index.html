@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BU CSE Batch-13 — Ballistic-15</title>
+<meta name="description" content="Home for the CSE Batch-13 (Ballistic-15) community at University of Barishal — notes, resources, projects and the batch roster.">
+<meta name="theme-color" content="#223466">
+
+<!-- Set theme before first paint to avoid a flash of the wrong theme -->
+<script src="data/site-data.js"></script>
+<script>
+(function(){
+  try{
+    var saved = localStorage.getItem('bu-cse-theme');
+    var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  }catch(e){}
+})();
+</script>
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23223466'/%3E%3Ctext x='50' y='68' font-size='54' font-family='monospace' fill='%23F2C572' text-anchor='middle'%3E13%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+
+<style>
+  :root{
+    --ink:#1B1D29; --muted:#6B6F7A; --paper:#FAFAF7; --surface:#FFFFFF; --line:#E4E2DC;
+    --navy:#223466; --navy-deep:#17284D; --accent-solid:#223466; --amber-soft:#C98A2B;
+    --mono-bg:#141A2E; --mono-text:#D7DBE8; --mono-key:#8FB4FF; --mono-str:#F2C572; --mono-num:#7FD1A8;
+    --success:#3C8B5B; --danger:#C24545;
+    --toast-bg:#1B1D29; --toast-text:#FAFAF7;
+    --radius:10px; --shadow:0 1px 2px rgba(20,20,30,.04), 0 8px 24px rgba(20,20,30,.06);
+    --overlay:rgba(15,17,26,.55);
+  }
+  :root[data-theme="dark"]{
+    --ink:#E7E9F0; --muted:#8D93A8; --paper:#0F1320; --surface:#161B2C; --line:#262C42;
+    --navy:#8FADFF; --navy-deep:#A9C0FF; --accent-solid:#3A54A6; --amber-soft:#F2C572;
+    --mono-bg:#0B0E19; --mono-text:#D7DBE8;
+    --success:#5FBE86; --danger:#E37272;
+    --toast-bg:#2A3049; --toast-text:#E7E9F0;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 28px rgba(0,0,0,.4);
+    --overlay:rgba(0,0,0,.65);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+  }
+
+  body{
+    font-family:'Inter', 'Noto Sans Bengali', sans-serif;
+    background:var(--paper); color:var(--ink); line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    transition:background .2s, color .2s;
+  }
+
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+  a{ color:inherit; }
+  :focus-visible{ outline:2px solid var(--navy); outline-offset:2px; border-radius:4px; }
+  button{ font-family:inherit; background:none; border:none; cursor:pointer; color:inherit; }
+  kbd{
+    font-family:'IBM Plex Mono', monospace; font-size:.72rem; background:var(--paper);
+    border:1px solid var(--line); border-bottom-width:2px; border-radius:5px; padding:2px 6px; color:var(--muted);
+  }
+
+  .skip-link{
+    position:absolute; left:12px; top:-48px; background:var(--accent-solid); color:#fff; padding:10px 16px;
+    border-radius:8px; z-index:2000; font-size:.85rem; transition:top .15s;
+  }
+  .skip-link:focus{ top:12px; }
+
+  #progressBar{
+    position:fixed; top:0; left:0; height:2px; background:var(--accent-solid); z-index:1200; width:0%;
+    transition:width .1s ease-out;
+  }
+
+  /* ===== NAV ===== */
+  nav{ background:var(--surface); border-bottom:1px solid var(--line); position:sticky; top:0; z-index:1000; }
+  .nav-container{ max-width:1180px; margin:0 auto; padding:14px 24px; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .nav-logo{ display:flex; align-items:center; gap:10px; font-weight:600; font-size:1rem; }
+  .nav-logo .mark{ width:30px; height:30px; border-radius:7px; background:var(--accent-solid); color:var(--amber-soft); font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:.8rem; display:flex; align-items:center; justify-content:center; }
+  .nav-logo .tag{ color:var(--muted); font-size:.78rem; font-family:'IBM Plex Mono', monospace; margin-left:2px; }
+
+  .nav-mid{ display:flex; gap:6px; list-style:none; align-items:center; }
+  .nav-mid button{ color:var(--muted); font-size:.87rem; font-weight:500; padding:8px 12px; border-radius:7px; transition:color .15s, background .15s; white-space:nowrap; }
+  .nav-mid button:hover{ color:var(--ink); background:var(--paper); }
+  .nav-mid button.active{ color:var(--navy); font-weight:600; }
+
+  .nav-right{ display:flex; align-items:center; gap:6px; }
+  .icon-btn{
+    width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+    color:var(--muted); transition:background .15s, color .15s; font-size:.95rem; flex-shrink:0;
+  }
+  .icon-btn:hover{ background:var(--paper); color:var(--ink); }
+
+  .search-trigger{
+    display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:8px;
+    padding:7px 10px; color:var(--muted); font-size:.83rem; background:var(--paper);
+  }
+  .search-trigger:hover{ border-color:var(--navy); color:var(--ink); }
+
+  .hamburger{ display:none; font-size:1.1rem; }
+
+  /* ===== HERO ===== */
+  .hero{ max-width:1180px; margin:0 auto; padding:64px 24px 56px; display:grid; grid-template-columns:1.1fr 1fr; gap:56px; align-items:center; position:relative; overflow:hidden; }
+  .hero::before{ content:''; position:absolute; width:440px; height:440px; right:-220px; top:-220px; border-radius:50%; background:radial-gradient(circle, rgba(143,180,255,.20), transparent 68%); pointer-events:none; }
+  .hero-eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:.78rem; letter-spacing:.08em; color:var(--navy); text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+  .hero-eyebrow .dot{ width:6px; height:6px; border-radius:50%; background:var(--success); display:inline-block; }
+  .hero h1{ font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:2.7rem; line-height:1.08; letter-spacing:-.01em; }
+  .hero h1 .accent{ color:var(--navy); }
+  .hero p.lede{ margin-top:16px; color:var(--muted); font-size:1.02rem; max-width:46ch; }
+  .hero-stats{ display:flex; gap:28px; margin-top:28px; }
+  .stat .n{ font-size:1.3rem; font-weight:600; font-family:'IBM Plex Mono', monospace; }
+  .stat .l{ font-size:.75rem; color:var(--muted); font-family:'IBM Plex Mono', monospace; }
+  .hero-cta{ margin-top:26px; display:flex; gap:10px; flex-wrap:wrap; }
+  .btn{ display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:8px; font-size:.87rem; font-weight:500; transition:all .15s; }
+  .btn-primary{ background:var(--accent-solid); color:#fff; }
+  .btn-primary:hover{ background:var(--navy-deep); }
+  .btn-ghost{ border:1px solid var(--line); }
+  .btn-ghost:hover{ border-color:var(--navy); }
+
+  .manifest{ background:var(--mono-bg); border:1px solid rgba(255,255,255,.08); border-radius:14px; overflow:hidden; box-shadow:var(--shadow); position:relative; }
+  .manifest::after{ content:''; position:absolute; inset:0; pointer-events:none; background:linear-gradient(120deg, transparent 45%, rgba(255,255,255,.04), transparent 55%); }
+  .manifest-bar{ display:flex; align-items:center; gap:8px; padding:12px 16px; border-bottom:1px solid rgba(255,255,255,.08); }
+  .manifest-bar .dots{ display:flex; gap:6px; }
+  .manifest-bar .dots span{ width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,.18); }
+  .manifest-bar .fname{ font-family:'IBM Plex Mono', monospace; font-size:.76rem; color:rgba(255,255,255,.5); margin-left:6px; }
+  .manifest pre{ font-family:'IBM Plex Mono', monospace; font-size:.86rem; line-height:1.9; padding:20px 22px; color:var(--mono-text); overflow-x:auto; }
+  .manifest .k{ color:var(--mono-key); } .manifest .s{ color:var(--mono-str); } .manifest .num{ color:var(--mono-num); } .manifest .p{ color:rgba(255,255,255,.35); }
+  .semester-card{ padding:22px; color:var(--mono-text); }
+  .semester-card .overline{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--mono-key); letter-spacing:.08em; text-transform:uppercase; }
+  .semester-card h2{ font-family:'Space Grotesk',sans-serif; font-size:1.45rem; margin:7px 0 5px; color:#fff; }
+  .semester-card > p{ color:rgba(255,255,255,.62); font-size:.85rem; }
+  .semester-metrics{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:20px 0; }
+  .semester-metric{ background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:10px; }
+  .semester-metric strong{ display:block; color:var(--mono-str); font-family:'IBM Plex Mono',monospace; font-size:1.08rem; }
+  .semester-metric span{ color:rgba(255,255,255,.5); font-size:.69rem; }
+  .semester-next{ padding:11px 12px; border-radius:8px; background:rgba(127,209,168,.10); border:1px solid rgba(127,209,168,.22); font-size:.8rem; color:#C6EAD7; }
+
+  @media (max-width:860px){ .hero{ grid-template-columns:1fr; padding-top:36px; gap:32px; } .hero h1{ font-size:2.1rem; } .insight-strip{ grid-template-columns:repeat(2,1fr); margin-top:0; } }
+  @media (max-width:480px){ .manifest pre{ font-size:.76rem; padding:16px 18px; } .insight-strip{ grid-template-columns:1fr 1fr; padding:0 16px; }.semester-metrics{ grid-template-columns:1fr; } }
+
+  /* ===== SECTION SHELL ===== */
+  .section{ max-width:1180px; margin:0 auto; padding:52px 24px; scroll-margin-top:70px; }
+  .section + .section{ border-top:1px solid var(--line); }
+  .section-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:28px; gap:16px; flex-wrap:wrap; }
+  .section-head h2{ font-family:'Space Grotesk', sans-serif; font-size:1.4rem; font-weight:600; }
+  .section-head .count{ font-family:'IBM Plex Mono', monospace; font-size:.8rem; color:var(--muted); }
+
+  /* ===== QUICK LINK CARDS ===== */
+  .cards-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:14px; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:20px; text-align:left; display:flex; gap:14px; align-items:flex-start; transition:border-color .15s, transform .15s; text-decoration:none; width:100%; }
+  .card:hover{ border-color:var(--navy); transform:translateY(-2px); }
+  .card i{ font-size:1.05rem; color:var(--navy); margin-top:2px; width:20px; text-align:center; }
+  .card h3{ font-size:.98rem; font-weight:600; margin-bottom:4px; }
+  .card p{ font-size:.84rem; color:var(--muted); }
+  .insight-strip{ max-width:1132px; margin:-12px auto 0; padding:0 24px; display:grid; grid-template-columns:repeat(4,1fr); gap:10px; position:relative; z-index:2; }
+  .insight-stat{ background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:13px 15px; box-shadow:var(--shadow); }
+  .insight-stat .label{ display:flex; align-items:center; gap:7px; color:var(--muted); font-size:.75rem; }
+  .insight-stat .label i{ color:var(--navy); }.insight-stat strong{ display:block; font-family:'Space Grotesk',sans-serif; font-size:1.2rem; margin-top:5px; }.insight-stat span{ color:var(--muted); font-size:.76rem; }
+
+  /* ===== TIMELINE ===== */
+  .timeline{ position:relative; padding-left:26px; }
+  .timeline::before{ content:''; position:absolute; left:5px; top:6px; bottom:6px; width:1px; background:var(--line); }
+  .tl-item{ position:relative; padding-bottom:26px; }
+  .tl-item:last-child{ padding-bottom:0; }
+  .tl-item::before{ content:''; position:absolute; left:-26px; top:5px; width:9px; height:9px; border-radius:50%; background:var(--surface); border:2px solid var(--navy); }
+  .tl-date{ font-family:'IBM Plex Mono', monospace; font-size:.76rem; color:var(--muted); margin-bottom:4px; }
+  .tl-item h3{ font-size:.98rem; font-weight:600; margin-bottom:4px; }
+  .tl-item p{ font-size:.9rem; color:var(--muted); max-width:60ch; }
+  .tl-meta{ display:flex; gap:8px; align-items:center; margin-bottom:5px; flex-wrap:wrap; }
+  .badge{ font-family:'IBM Plex Mono',monospace; font-size:.67rem; letter-spacing:.03em; padding:2px 6px; border:1px solid var(--line); border-radius:999px; color:var(--muted); }
+  .badge.important{ color:var(--danger); border-color:var(--danger); }
+  .update-link{ color:var(--navy); font-size:.82rem; font-weight:600; display:inline-block; margin-top:7px; }
+
+  /* ===== STUDENT DASHBOARD ===== */
+  .insight-grid{ display:grid; grid-template-columns:1.25fr .75fr; gap:18px; }
+  .panel{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:20px; }
+  .panel h3{ font-family:'Space Grotesk',sans-serif; font-size:1rem; margin-bottom:8px; }
+  .panel p{ color:var(--muted); font-size:.87rem; }
+  .course-list{ display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:12px; margin-top:18px; }
+  .course-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px; text-align:left; width:100%; transition:border-color .15s,transform .15s; }
+  .course-card:hover{ border-color:var(--navy); transform:translateY(-2px); }
+  .course-card.active{ border-color:var(--navy); box-shadow:0 0 0 3px color-mix(in srgb, var(--navy) 13%, transparent); }
+  .course-card .course-code{ color:var(--navy); font-family:'IBM Plex Mono',monospace; font-size:.75rem; }
+  .course-card h3{ font-size:.93rem; line-height:1.35; margin:6px 0; }
+  .course-card p{ font-size:.8rem; color:var(--muted); }
+  .course-card .credit{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--muted); margin-top:10px; }
+  .planner-form{ display:flex; gap:8px; margin:14px 0; }
+  .planner-form input{ min-width:0; flex:1; border:1px solid var(--line); border-radius:7px; background:var(--paper); color:var(--ink); padding:8px 10px; font:inherit; font-size:.84rem; }
+  .planner-form button{ padding:8px 11px; border-radius:7px; background:var(--accent-solid); color:#fff; font-size:.82rem; }
+  .task-list{ list-style:none; display:grid; gap:6px; }
+  .task-list li{ display:flex; align-items:center; gap:8px; font-size:.84rem; padding:5px 0; }
+  .task-list li.done span{ color:var(--muted); text-decoration:line-through; }
+  .task-list .remove-task{ margin-left:auto; color:var(--muted); padding:4px; }
+  .resource-filter{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+  .filter-btn{ border:1px solid var(--line); border-radius:999px; padding:6px 10px; font-size:.8rem; color:var(--muted); }
+  .filter-btn.active,.filter-btn:hover{ border-color:var(--navy); color:var(--navy); }
+  .resource-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(235px,1fr)); gap:12px; }
+  .resource-card{ position:relative; display:block; text-decoration:none; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px 46px 16px 16px; transition:transform .15s,border-color .15s; }
+  .resource-card:hover{ transform:translateY(-2px); border-color:var(--navy); }
+  .resource-card h3{ font-size:.94rem; margin:7px 0 4px; }.resource-card p{ font-size:.82rem; color:var(--muted); }
+  .resource-card .resource-meta{ font-family:'IBM Plex Mono',monospace; font-size:.7rem; color:var(--navy); }
+  .resource-card-wrap{ position:relative; }.save-resource{ position:absolute; right:9px; top:9px; width:30px; height:30px; border:1px solid var(--line); border-radius:7px; background:var(--surface); color:var(--muted); z-index:1; }.save-resource:hover,.save-resource.saved{ color:var(--amber-soft); border-color:var(--amber-soft); }.save-resource.saved i{ font-weight:900; }
+  .empty-state{ padding:22px 0; color:var(--muted); font-size:.9rem; }
+  .course-detail{ margin-top:14px; padding:14px; border-left:3px solid var(--navy); background:var(--paper); border-radius:0 8px 8px 0; font-size:.86rem; }
+  .course-detail p{ margin-top:5px; }
+  .course-note{ margin-top:14px; padding-top:12px; border-top:1px solid var(--line); }.course-note label{ display:flex; justify-content:space-between; gap:10px; font-weight:600; font-size:.82rem; }.course-note small{ color:var(--muted); font-weight:400; }.course-note textarea{ width:100%; min-height:72px; resize:vertical; margin-top:7px; padding:9px 10px; border:1px solid var(--line); border-radius:7px; background:var(--surface); color:var(--ink); font:inherit; font-size:.82rem; }
+  .progress-panel{ margin-top:18px; background:linear-gradient(135deg,var(--surface),var(--paper)); border:1px solid var(--line); border-radius:var(--radius); padding:18px; }
+  .progress-head{ display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }.progress-head h3{ margin:0; }.progress-head strong{ color:var(--navy); font-family:'IBM Plex Mono',monospace; }
+  .progress-track{ height:8px; overflow:hidden; border-radius:99px; background:var(--line); margin:12px 0 16px; }.progress-track span{ display:block; height:100%; width:0; background:linear-gradient(90deg,var(--accent-solid),var(--amber-soft)); transition:width .25s ease; }
+  .course-checklist{ display:grid; grid-template-columns:repeat(auto-fit,minmax(185px,1fr)); gap:7px; list-style:none; }.course-checklist label{ display:flex; gap:8px; align-items:center; padding:8px 9px; border:1px solid var(--line); border-radius:7px; font-size:.79rem; cursor:pointer; background:var(--surface); }.course-checklist label:has(input:checked){ border-color:var(--success); }.course-checklist input{ accent-color:var(--success); }
+  .progress-details summary{ cursor:pointer; color:var(--navy); font-size:.83rem; font-weight:600; list-style:none; }.progress-details summary::-webkit-details-marker{ display:none; }.progress-details summary::after{ content:'Show courses'; margin-left:8px; color:var(--muted); font-weight:400; }.progress-details[open] summary::after{ content:'Hide courses'; }.progress-details .course-checklist{ margin-top:12px; }
+  .student-pulse{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px; }.pulse-item{ padding:10px 12px; background:var(--paper); border-radius:8px; border:1px solid var(--line); }.pulse-item span{ display:block; color:var(--muted); font-size:.71rem; }.pulse-item strong{ display:block; font-size:.84rem; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .focus-timer{ margin-top:16px; border:1px solid var(--line); border-radius:9px; padding:12px; background:linear-gradient(135deg,var(--paper),var(--surface)); }.focus-timer-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; }.focus-timer-head h4{ font-family:'Space Grotesk',sans-serif; font-size:.88rem; }.focus-timer select{ font:inherit; font-size:.75rem; padding:5px 7px; color:var(--ink); border:1px solid var(--line); border-radius:6px; background:var(--surface); }.timer-display{ font-family:'IBM Plex Mono',monospace; font-size:1.65rem; font-weight:600; letter-spacing:.04em; margin:10px 0; }.timer-actions{ display:flex; gap:7px; }.timer-actions button{ flex:1; border:1px solid var(--line); border-radius:6px; padding:7px; font-size:.78rem; }.timer-actions .timer-primary{ background:var(--accent-solid); border-color:var(--accent-solid); color:#fff; }
+  .syllabus-search{ display:flex; align-items:center; gap:9px; padding:9px 11px; border:1px solid var(--line); border-radius:8px; margin:18px 0; background:var(--paper); }.syllabus-search i{ color:var(--muted); }.syllabus-search input{ width:100%; border:0; outline:0; background:transparent; font:inherit; color:var(--ink); }
+  .syllabus-hidden{ display:none !important; }
+
+  /* ===== PARTICIPANTS ===== */
+  .toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+  .search-box{ flex:1; min-width:200px; max-width:320px; display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:8px; padding:8px 12px; background:var(--surface); }
+  .search-box i{ color:var(--muted); font-size:.85rem; }
+  .search-box input{ border:none; outline:none; font-family:inherit; font-size:.88rem; width:100%; background:transparent; color:var(--ink); }
+  .tool-btn{ display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); border-radius:8px; padding:8px 12px; font-size:.83rem; color:var(--muted); transition:border-color .15s, color .15s; }
+  .tool-btn:hover{ border-color:var(--navy); color:var(--ink); }
+  .table-container{ border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:var(--surface); }
+  table{ width:100%; border-collapse:collapse; }
+  th{ background:var(--paper); color:var(--muted); padding:10px 18px; text-align:left; font-size:.72rem; font-family:'IBM Plex Mono', monospace; letter-spacing:.06em; text-transform:uppercase; border-bottom:1px solid var(--line); }
+  th button{ display:flex; align-items:center; gap:6px; color:inherit; font:inherit; text-transform:inherit; letter-spacing:inherit; transition:color .15s; }
+  th button:hover{ color:var(--navy); }
+  td{ padding:11px 18px; border-bottom:1px solid var(--line); font-size:.92rem; }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:hover td{ background:var(--paper); }
+  .serial-no{ font-family:'IBM Plex Mono', monospace; color:var(--muted); width:44px; }
+  .no-results{ padding:24px 18px; color:var(--muted); font-size:.9rem; text-align:center; }
+
+  /* ===== MARKDOWN PAGE VIEW ===== */
+  .page-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; gap:12px; flex-wrap:wrap; }
+  .breadcrumb{ font-size:.8rem; color:var(--muted); font-family:'IBM Plex Mono', monospace; }
+  .breadcrumb span{ color:var(--ink); }
+  .markdown-content{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:34px 40px; line-height:1.8; }
+  .markdown-content h1{ font-family:'Space Grotesk',sans-serif; font-size:1.7rem; margin:0 0 14px; }
+  .markdown-content h2{ font-family:'Space Grotesk',sans-serif; color:var(--navy); font-size:1.3rem; margin:22px 0 10px; border-bottom:1px solid var(--line); padding-bottom:8px; }
+  .markdown-content h3{ font-size:1.05rem; margin:16px 0 8px; }
+  .markdown-content p{ margin:10px 0; }
+  .markdown-content ul, .markdown-content ol{ margin:10px 0 10px 22px; }
+  .markdown-content a{ color:var(--navy); text-decoration:underline; text-underline-offset:2px; }
+  .markdown-content code{ font-family:'IBM Plex Mono',monospace; background:var(--paper); padding:2px 6px; border-radius:4px; font-size:.86rem; }
+  .markdown-content pre{ background:var(--mono-bg); color:var(--mono-text); padding:16px 20px; border-radius:8px; overflow-x:auto; margin:14px 0; }
+  .markdown-content pre code{ background:none; color:inherit; padding:0; }
+  .markdown-content table{ width:100%; border-collapse:collapse; margin:14px 0; }
+  .markdown-content th{ background:var(--accent-solid); color:#fff; padding:9px 14px; text-transform:none; letter-spacing:0; font-family:'Inter',sans-serif; font-size:.85rem; }
+  .markdown-content td{ padding:9px 14px; }
+  .markdown-content blockquote{ border-left:3px solid var(--navy); padding:8px 18px; margin:14px 0; background:var(--paper); color:var(--muted); }
+  .markdown-content img{ max-width:100%; border-radius:8px; margin:10px 0; }
+  .txt-block{ white-space:pre-wrap; font-family:'IBM Plex Mono', monospace; font-size:.88rem; background:var(--mono-bg); color:var(--mono-text); padding:22px 24px; border-radius:8px; line-height:1.8; }
+
+  .loading{ text-align:center; padding:60px 20px; color:var(--muted); }
+  .loading i{ font-size:1.4rem; animation:spin 1s linear infinite; }
+  @keyframes spin{ from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
+
+  .back-btn{ display:inline-flex; align-items:center; gap:8px; padding:8px 14px; background:var(--surface); border:1px solid var(--line); border-radius:8px; font-size:.86rem; font-weight:500; transition:border-color .15s; }
+  .back-btn:hover{ border-color:var(--navy); }
+
+  /* ===== COMMAND PALETTE ===== */
+  .cmdk-overlay{ position:fixed; inset:0; background:var(--overlay); z-index:1500; display:none; align-items:flex-start; justify-content:center; padding:12vh 20px 20px; }
+  .cmdk-overlay.open{ display:flex; }
+  .cmdk-panel{ width:100%; max-width:560px; background:var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,.3); overflow:hidden; }
+  .cmdk-input-row{ display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid var(--line); }
+  .cmdk-input-row i{ color:var(--muted); }
+  .cmdk-input-row input{ flex:1; border:none; outline:none; background:transparent; font-family:inherit; font-size:.95rem; color:var(--ink); }
+  .cmdk-input-row kbd{ font-size:.7rem; }
+  .cmdk-list{ max-height:360px; overflow-y:auto; padding:8px; }
+  .cmdk-group-label{ font-family:'IBM Plex Mono', monospace; font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; padding:10px 10px 4px; }
+  .cmdk-item{ display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px; font-size:.88rem; cursor:pointer; }
+  .cmdk-item i{ color:var(--muted); width:16px; text-align:center; }
+  .cmdk-item.selected{ background:var(--paper); }
+  .cmdk-item .hint{ margin-left:auto; font-size:.72rem; color:var(--muted); font-family:'IBM Plex Mono', monospace; }
+  .cmdk-empty{ padding:24px; text-align:center; color:var(--muted); font-size:.88rem; }
+
+  /* ===== TOASTS ===== */
+  .toast-stack{ position:fixed; top:16px; right:16px; z-index:2000; display:flex; flex-direction:column; gap:8px; }
+  .toast{ background:var(--toast-bg); color:var(--toast-text); padding:10px 16px; border-radius:8px; font-size:.85rem; box-shadow:var(--shadow); display:flex; align-items:center; gap:8px; animation:toastIn .18s ease-out; }
+  @keyframes toastIn{ from{ opacity:0; transform:translateY(-6px);} to{ opacity:1; transform:translateY(0);} }
+
+  /* ===== BACK TO TOP ===== */
+  .to-top{ position:fixed; right:20px; bottom:20px; width:42px; height:42px; border-radius:50%; background:var(--accent-solid); color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:900; }
+  .to-top.visible{ opacity:1; pointer-events:auto; }
+  .to-top:hover{ transform:translateY(-2px); }
+
+  /* ===== FOOTER ===== */
+  footer{ border-top:1px solid var(--line); padding:36px 24px; }
+  .footer-inner{ max-width:1180px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+  .footer-links{ display:flex; gap:22px; list-style:none; flex-wrap:wrap; }
+  .footer-links button{ color:var(--muted); font-size:.85rem; }
+  .footer-links button:hover{ color:var(--ink); }
+  .social-icons{ display:flex; gap:16px; }
+  .social-icons a{ color:var(--muted); font-size:1.05rem; transition:color .15s; }
+  .social-icons a:hover{ color:var(--navy); }
+  footer .fine{ font-size:.78rem; color:var(--muted); margin-top:14px; text-align:center; }
+
+  @media print{
+    nav, footer, .hero, #quick-links, #announcements, .toolbar, .to-top, .toast-stack, #progressBar{ display:none !important; }
+    body{ background:#fff; color:#000; }
+  }
+
+  @media (max-width:980px){
+    .nav-mid{ display:none; flex-direction:column; align-items:stretch; position:absolute; top:100%; left:0; right:0; background:var(--surface); border-bottom:1px solid var(--line); padding:8px; gap:2px; }
+    .nav-mid.active{ display:flex; }
+    .nav-mid button{ text-align:left; width:100%; }
+    .hamburger{ display:block; }
+    .search-trigger{ padding:0; width:36px; height:36px; justify-content:center; border:none; background:transparent; }
+    .search-trigger span, .search-trigger kbd{ display:none; }
+    .section-head{ flex-direction:column; align-items:flex-start; }
+    .markdown-content{ padding:22px; }
+  }
+  @media (max-width:680px){
+    .insight-grid{ grid-template-columns:1fr; }
+    .student-pulse{ grid-template-columns:1fr; }
+    .section{ padding:38px 16px; }
+    .course-list{ grid-template-columns:1fr; }
+    .resource-grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<a href="#mainContent" class="skip-link">Skip to content</a>
+<div id="progressBar"></div>
+
+<template id="homeTemplate">
+  <section class="hero" id="home">
+    <div>
+      <p class="hero-eyebrow"><span class="dot"></span> University of Barishal · Dept. of CSE</p>
+      <h1>Batch 13 — <span class="accent">Ballistic-15</span></h1>
+      <p class="lede">The shared home base for our batch: notes, resources, project showcase and the full roster, kept in one place for the next four years.</p>
+      <div class="hero-stats">
+        <div class="stat"><div class="n" data-member-count>—</div><div class="l">members</div></div>
+        <div class="stat"><div class="n">04</div><div class="l">years</div></div>
+        <div class="stat"><div class="n">13</div><div class="l">batch</div></div>
+      </div>
+      <div class="hero-cta">
+        <button class="btn btn-primary" data-route="participants"><i class="fas fa-users"></i> View roster</button>
+        <button class="btn btn-ghost" id="openSearchHero"><i class="fas fa-magnifying-glass"></i> Search <kbd>⌘K</kbd></button>
+      </div>
+    </div>
+    <div class="manifest">
+      <div class="manifest-bar"><div class="dots"><span></span><span></span><span></span></div><span class="fname">semester.snapshot</span></div>
+      <div class="semester-card">
+        <div class="overline">Academic launchpad</div>
+        <h2>First semester</h2>
+        <p>A compact view of what is ready to explore and contribute to.</p>
+        <div class="semester-metrics">
+          <div class="semester-metric"><strong data-course-count>—</strong><span>courses</span></div>
+          <div class="semester-metric"><strong data-credit-count>—</strong><span>credits</span></div>
+          <div class="semester-metric"><strong data-resource-count>—</strong><span>resources</span></div>
+        </div>
+        <div class="semester-next"><i class="fas fa-compass"></i> <span id="semesterNext">Choose a course and set one small goal for the week.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="insight-strip" aria-label="Batch learning snapshot">
+    <div class="insight-stat"><div class="label"><i class="fas fa-book-open"></i> Semester load</div><strong data-credit-count>—</strong><span>total credits</span></div>
+    <div class="insight-stat"><div class="label"><i class="fas fa-layer-group"></i> Course map</div><strong data-course-count>—</strong><span>subjects to master</span></div>
+    <div class="insight-stat"><div class="label"><i class="fas fa-link"></i> Learning library</div><strong data-resource-count>—</strong><span>verified starting points</span></div>
+    <div class="insight-stat"><div class="label"><i class="fas fa-bullhorn"></i> Update feed</div><strong data-update-count>—</strong><span>current notices</span></div>
+  </div>
+
+  <div class="section" id="quick-links">
+    <div class="section-head"><h2>Quick links</h2></div>
+    <div class="cards-grid">
+      <button class="card" data-route="participants"><i class="fas fa-users"></i><div><h3>Participant list</h3><p>All <span data-member-count>—</span> listed batch members</p></div></button>
+      <button class="card" data-route="resources"><i class="fas fa-book"></i><div><h3>Study resources</h3><p>Books, links, learning material</p></div></button>
+      <button class="card" data-route="syllabus"><i class="fas fa-list-check"></i><div><h3>Semester syllabus</h3><p>Courses, credits, and study focus</p></div></button>
+      <button class="card" data-route="notes"><i class="fas fa-note-sticky"></i><div><h3>Course notes</h3><p>Organized by semester</p></div></button>
+      <button class="card" data-route="projects"><i class="fas fa-code-branch"></i><div><h3>Projects</h3><p>Group and individual work</p></div></button>
+      <a class="card" id="githubCard" href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i><div><h3>GitHub repository</h3><p>Contribute to the batch repo</p></div></a>
+      <button class="card" data-route="contribute"><i class="fas fa-handshake"></i><div><h3>Contribution guide</h3><p>How to add or edit content</p></div></button>
+    </div>
+  </div>
+
+  <div class="section" id="announcements">
+    <div class="section-head"><h2>Notices &amp; class announcements</h2><button class="tool-btn" data-route="updates"><i class="fas fa-clock-rotate-left"></i> View all</button></div>
+    <div class="timeline" id="updatesPreview"></div>
+  </div>
+
+  <div class="section" id="study-dashboard">
+    <div class="section-head"><h2>Start this semester with direction</h2><span class="count mono">your private study helper</span></div>
+    <div class="insight-grid">
+      <div class="panel"><h3>First-semester course map</h3><p>Choose a course to see its focus, recommended text, and a practical study habit.</p><div class="course-list" id="coursePreview"></div><div class="course-detail" id="courseDetail" aria-live="polite">Select a course to see a focused study suggestion.</div></div>
+      <div class="panel"><h3>This week's focus</h3><p>Add small, specific tasks. They stay only in this browser, so your checklist remains personal.</p><div class="student-pulse"><div class="pulse-item"><span>Latest notice</span><strong id="pulseNotice">—</strong></div><div class="pulse-item"><span>Tasks complete</span><strong id="pulseTasks">0 / 0</strong></div><div class="pulse-item"><span>Course review</span><strong id="pulseCourses">0 / 0</strong></div></div><form class="planner-form" id="taskForm"><input id="taskInput" maxlength="120" placeholder="e.g. Solve 5 C loop problems" aria-label="New study task"><button type="submit">Add</button></form><ul class="task-list" id="taskList"></ul><div class="focus-timer" aria-label="Focus timer"><div class="focus-timer-head"><h4><i class="fas fa-hourglass-half"></i> Focus timer</h4><label><span class="sr-only">Focus duration</span><select id="timerDuration"><option value="25">25 min</option><option value="45">45 min</option><option value="60">60 min</option></select></label></div><div class="timer-display" id="timerDisplay" role="timer" aria-live="polite">25:00</div><div class="timer-actions"><button type="button" class="timer-primary" id="timerStart">Start</button><button type="button" id="timerReset">Reset</button></div></div></div>
+    </div>
+    <div class="progress-panel"><div class="progress-head"><div><h3>My course progress</h3><p>Mark a course after you have reviewed its current material. Saved privately in this browser.</p></div><strong id="courseProgressLabel">0 / 0 reviewed</strong></div><div class="progress-track" aria-label="Course review progress"><span id="courseProgressBar"></span></div><details class="progress-details"><summary>Update course review</summary><ul class="course-checklist" id="courseChecklist"></ul></details></div>
+  </div>
+
+  <div class="section" id="participants">
+    <div class="section-head"><h2>Batch roster</h2><span class="count mono" id="rosterCount"> members</span></div>
+    <div class="toolbar">
+      <div class="search-box"><i class="fas fa-magnifying-glass"></i><input type="text" id="participantSearch" placeholder="Search a name…" aria-label="Search the roster"></div>
+      <button class="tool-btn" id="sortToggle"><i class="fas fa-arrow-down-a-z"></i> <span id="sortLabel">Roll order</span></button>
+      <button class="tool-btn" id="exportCsv"><i class="fas fa-file-csv"></i> Export CSV</button>
+      <button class="tool-btn" id="printRoster"><i class="fas fa-print"></i> Print</button>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead><tr><th style="width:60px">#</th><th><button id="nameSortBtn">Name <i class="fas fa-sort" style="font-size:.7rem"></i></button></th></tr></thead>
+        <tbody id="participantTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<nav>
+  <div class="nav-container">
+    <button class="nav-logo" id="navHomeBtn" aria-label="Go to home"><span class="mark">13</span> BU CSE <span class="tag">batch-13</span></button>
+    <ul class="nav-mid" id="navLinks">
+      <li><button data-route="" id="navHome" class="active">Home</button></li>
+      <li><button data-route="about" id="navAbout">About</button></li>
+      <li><button data-route="resources" id="navResources">Resources</button></li>
+      <li><button data-route="syllabus" id="navSyllabus">Syllabus</button></li>
+      <li><button data-route="notes" id="navNotes">Notes</button></li>
+      <li><button data-route="projects" id="navProjects">Projects</button></li>
+      <li><button data-route="contribute" id="navContribute">Contribute</button></li>
+      <li><button data-route="participants" id="navParticipants">Participants</button></li>
+    </ul>
+    <div class="nav-right">
+      <button class="search-trigger" id="openSearchNav" aria-label="Open search"><i class="fas fa-magnifying-glass"></i><span>Search</span><kbd>⌘K</kbd></button>
+      <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
+      <button class="hamburger icon-btn" id="hamburgerBtn" aria-label="Toggle menu" aria-expanded="false"><i class="fas fa-bars"></i></button>
+    </div>
+  </div>
+</nav>
+
+<main id="mainContent"></main>
+
+<footer>
+  <div class="footer-inner">
+    <span class="mono" style="font-size:.85rem;color:var(--muted)">BU CSE Batch-13</span>
+    <ul class="footer-links">
+      <li><button data-route="about">About</button></li>
+      <li><button data-route="participants">Participants</button></li>
+      <li><button data-route="resources">Resources</button></li>
+      <li><button data-route="syllabus">Syllabus</button></li>
+      <li><button data-route="contribute">Contribute</button></li>
+    </ul>
+    <div class="social-icons">
+      <a href="#" aria-label="Facebook group" title="Facebook"><i class="fab fa-facebook"></i></a>
+      <a href="#" aria-label="GitHub repository" title="GitHub"><i class="fab fa-github"></i></a>
+      <a href="#" aria-label="Discord server" title="Discord"><i class="fab fa-discord"></i></a>
+      <a href="#" aria-label="YouTube channel" title="YouTube"><i class="fab fa-youtube"></i></a>
+    </div>
+  </div>
+  <p class="fine">Made by BU CSE Batch-13, University of Barishal — © <span id="year"></span> Ballistic-15 · Press <kbd>⌘K</kbd> to search anywhere</p>
+</footer>
+
+<div class="cmdk-overlay" id="cmdkOverlay" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="cmdk-panel">
+    <div class="cmdk-input-row">
+      <i class="fas fa-magnifying-glass"></i>
+      <input type="text" id="cmdkInput" placeholder="Search pages or roster names…" autocomplete="off">
+      <kbd>Esc</kbd>
+    </div>
+    <div class="cmdk-list" id="cmdkList"></div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+<button class="to-top" id="toTop" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
+<script>
+(function(){
+  "use strict";
+
+  const siteData = window.BATCH_DATA || { batch:{ repository:"bu-cse/CSE_13" }, updates:[], courses:[], resources:[] };
+  const GITHUB_REPO = siteData.batch.repository;
+
+  const participants = [
+    "Shreoshi Roy Rayte (Rayte-Barishal)", "Urmi Sarker", "Aysha Amman Maria",
+"Md. Arafat Rahman (Arafat-Jamalpur)", "Md Habibur Rahman (Habibur-Jhenidah)", "Mehraz Uddin Showrov", "Mona Roy (Mona-Dhaka)",
+"Naimul Islam (Nayeemul-Magura)", "Biton Mondol (Biton-Madaripur)", "Mehraj Hossain Mishal (Mishal-Chandpur)",
+"আকাশ বিশ্বাস", "Fatima Afrin", "Disha Mondal (Disha-Khulna)",
+"Musfika Hasan", "Ifad Ul Hasan", "Al Shahariar Tamim (Tamim-Barishal)",
+"Rupuntor Abir", "Resma Akter", "Manik Halder (Manik-Agailjhara, Barishal)",
+"AbDul KaDer (Kader-Sirajgonj)", "Riadul Hassan Rupok", "Tanvir Alom Sifat (Sifat-Dhaka)",
+"Morsalin Mahin (Morsalin-Kurigram)", "Tarannum Tannu", "Tasnuva Samia",
+"Tajrian Tasin (Tasin-Barishal)", "Kazi Sadrif Sanve (Sanve-Barishal)", "Mohsina Akter",
+"Sajjad Ullah (Sajjad-Patuakhali)", "Gopal Podder Ovi (Ovi-Gopalgonj)", "P R O Hor",
+"Al Amin Hawlader", "Md Ashikur Rahman Siam (Siam-Patuakhali)", "Dî Šhâ",
+"Md Neon", "Shahriar Abir (Abir-Bhola)", "Gourob Paul Soumik (Gourob Paul Soumik-Moulvibazar, Sylhet)",
+"R H Rasib", "Serajum Munira", "MD Tasib Mahmud Nîløy",
+"Afrin Antora (Antora-Barishal)", "Imran Hasan (Imran-Cumilla)",
+"Sojib Uddin (Sojib Uddin ~ Sirajgonj)", "Muhammad Ahmadullah (Ahmed-Pirojpur)", "Dip Bala (Dip Bala-Bagerhat)", "Md Anik Hossen (Anik ~ Natore, Rajshahi)", "Naimul Islam (Nayeemul-Magura)", "Ashadullah Al Galib (ASHADULLA Al GALIV-COMILLA)", "Asiful Hasan Kaium (Asif-Chittagong)"
+  ];
+
+  // Single source of truth for every route: clean slug, type, and where it points.
+  // type "page"   -> fetches + renders a markdown/text file
+  // type "scroll" -> jumps to a section already on the home page
+  const routes = {
+    "":            { type: "home",   navId: "navHome" },
+    "about":       { type: "page",   file: "README.md",                    label: "About",             icon: "fa-circle-info",  navId: "navAbout" },
+    "resources":   { type: "resources", label: "Study resources",           icon: "fa-book",         navId: "navResources" },
+    "syllabus":    { type: "syllabus", label: "Semester syllabus",          icon: "fa-list-check",   navId: "navSyllabus" },
+    "updates":     { type: "updates", label: "Notices & class announcements", icon: "fa-bullhorn",     navId: "navHome" },
+    "notes":       { type: "page",   file: "notes/README.md",              label: "Course notes",      icon: "fa-note-sticky",  navId: "navNotes" },
+    "projects":    { type: "page",   file: "projects/README.md",           label: "Projects",          icon: "fa-code-branch",  navId: "navProjects" },
+    "contribute":  { type: "page",   file: "CONTRIBUTING.md",              label: "Contribution guide",icon: "fa-handshake",    navId: "navContribute" },
+    "participants":{ type: "scroll", target: "participants",               label: "Participant roster",icon: "fa-users",        navId: "navParticipants" }
+  };
+
+  const mainEl = document.getElementById("mainContent");
+  const navLinksEl = document.getElementById("navLinks");
+  const hamburgerBtn = document.getElementById("hamburgerBtn");
+  const progressBar = document.getElementById("progressBar");
+  const toastStack = document.getElementById("toastStack");
+  const toTopBtn = document.getElementById("toTop");
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  /* ---------- Theme toggle ---------- */
+  const themeToggle = document.getElementById("themeToggle");
+  function applyThemeIcon(){
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+  }
+  applyThemeIcon();
+  themeToggle.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem("bu-cse-theme", next); }catch(e){}
+    applyThemeIcon();
+  });
+
+  /* ---------- Toasts ---------- */
+  function toast(message, icon){
+    const el = document.createElement("div");
+    el.className = "toast";
+    el.innerHTML = `<i class="fas ${icon || 'fa-circle-check'}"></i><span>${message}</span>`;
+    toastStack.appendChild(el);
+    setTimeout(() => { el.style.opacity = "0"; el.style.transition = "opacity .2s"; setTimeout(() => el.remove(), 200); }, 2400);
+  }
+
+  /* ---------- Mobile menu ---------- */
+  function closeMobileMenu(){ navLinksEl.classList.remove("active"); hamburgerBtn.setAttribute("aria-expanded","false"); }
+  hamburgerBtn.addEventListener("click", () => {
+    const isOpen = navLinksEl.classList.toggle("active");
+    hamburgerBtn.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  function escapeHtml(text){
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function setActiveNav(navId){
+    document.querySelectorAll(".nav-mid button").forEach(el => el.classList.remove("active"));
+    if (navId){ const el = document.getElementById(navId); if (el) el.classList.add("active"); }
+  }
+
+  function formatDate(value){
+    const date = new Date(`${value}T12:00:00`);
+    return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("en", { year:"numeric", month:"short", day:"numeric" }).format(date);
+  }
+
+  function renderUpdateItems(limit){
+    const updates = [...siteData.updates].sort((a,b) => b.date.localeCompare(a.date));
+    const list = typeof limit === "number" ? updates.slice(0, limit) : updates;
+    if (!list.length) return '<p class="empty-state">No updates have been published yet.</p>';
+    return list.map(update => `
+      <article class="tl-item">
+        <div class="tl-meta"><time class="tl-date" datetime="${escapeHtml(update.date)}">${escapeHtml(update.displayDate || formatDate(update.date))}</time><span class="badge ${update.priority === "important" ? "important" : ""}">${escapeHtml(update.type || "Update")}</span></div>
+        <h3>${escapeHtml(update.title)}</h3><p>${escapeHtml(update.body)}</p>
+        ${update.link ? `<a class="update-link" href="${escapeHtml(update.link)}" target="_blank" rel="noopener noreferrer">View official source <i class="fas fa-arrow-up-right-from-square"></i></a>` : ""}
+      </article>`).join("");
+  }
+
+  const COURSE_NOTES_KEY = "bu-cse-course-notes";
+  function getCourseNotes(){ try{ return JSON.parse(localStorage.getItem(COURSE_NOTES_KEY) || "{}"); }catch(e){ return {}; } }
+  function wireCourseNote(courseCode){
+    const input = document.getElementById("courseNoteInput"); const status = document.getElementById("courseNoteStatus");
+    if (!input || !status) return;
+    input.addEventListener("input", () => { const notes = getCourseNotes(); notes[courseCode] = input.value; try{ localStorage.setItem(COURSE_NOTES_KEY, JSON.stringify(notes)); status.textContent = "Saved"; }catch(e){ status.textContent = "Could not save"; } });
+  }
+
+  function renderCoursePreview(){
+    const container = document.getElementById("coursePreview");
+    const detail = document.getElementById("courseDetail");
+    if (!container) return;
+    container.innerHTML = siteData.courses.map((course, index) => `<button class="course-card" type="button" data-course-index="${index}"><div class="course-code">${escapeHtml(course.code)}</div><h3>${escapeHtml(course.title)}</h3><p>${escapeHtml(course.area)}</p><div class="credit">${escapeHtml(course.credit)} credits</div></button>`).join("");
+    container.addEventListener("click", event => {
+      const card = event.target.closest("[data-course-index]");
+      if (!card || !detail) return;
+      const course = siteData.courses[Number(card.dataset.courseIndex)];
+      container.querySelectorAll(".course-card").forEach(item => item.classList.toggle("active", item === card));
+      const notes = getCourseNotes();
+      detail.innerHTML = `<strong>${escapeHtml(course.code)} · ${escapeHtml(course.title)}</strong><p><b>Status:</b> ${escapeHtml(course.status || "—")} · <b>Contact hours/week:</b> Theory ${escapeHtml(course.theory || "—")}, Sessional ${escapeHtml(course.sessional || "—")}</p><p><b>Focus:</b> ${escapeHtml(course.focus)}</p><p><b>Recommended text:</b> ${escapeHtml(course.book)}</p><p><b>Study habit:</b> ${escapeHtml(course.practice)}</p><div class="course-note"><label for="courseNoteInput">My private note <small id="courseNoteStatus">Saved in this browser</small></label><textarea id="courseNoteInput" maxlength="500" placeholder="Add a formula, reminder, or question for this course…">${escapeHtml(notes[course.code] || "")}</textarea></div>`;
+      wireCourseNote(course.code);
+    });
+  }
+
+  function renderLearningSnapshot(){
+    const syllabus = siteData.syllabus || {};
+    const values = {
+      "[data-course-count]": siteData.courses.length,
+      "[data-credit-count]": syllabus.totalCredits || "—",
+      "[data-resource-count]": siteData.resources.length,
+      "[data-update-count]": siteData.updates.length
+    };
+    Object.entries(values).forEach(([selector, value]) => document.querySelectorAll(selector).forEach(el => el.textContent = value));
+    const latest = [...siteData.updates].sort((a,b) => b.date.localeCompare(a.date))[0];
+    const next = document.getElementById("semesterNext");
+    if (next && latest) next.textContent = `Latest: ${latest.title}`;
+  }
+
+  const TASKS_KEY = "bu-cse-study-tasks";
+  function getTasks(){ try{ return JSON.parse(localStorage.getItem(TASKS_KEY) || "[]"); }catch(e){ return []; } }
+  function saveTasks(tasks){ try{ localStorage.setItem(TASKS_KEY, JSON.stringify(tasks)); }catch(e){} }
+  function renderStudentPulse(){
+    const tasks = getTasks(); const progress = getCourseProgress();
+    const latest = [...siteData.updates].sort((a,b) => b.date.localeCompare(a.date))[0];
+    const notice = document.getElementById("pulseNotice"); const taskPulse = document.getElementById("pulseTasks"); const coursePulse = document.getElementById("pulseCourses");
+    if (notice) notice.textContent = latest ? latest.title : "No new notices";
+    if (taskPulse) taskPulse.textContent = `${tasks.filter(task => task.done).length} / ${tasks.length}`;
+    if (coursePulse) coursePulse.textContent = `${siteData.courses.filter(course => progress[course.code]).length} / ${siteData.courses.length}`;
+  }
+  function renderTasks(){
+    const list = document.getElementById("taskList");
+    if (!list) return;
+    const tasks = getTasks();
+    list.innerHTML = tasks.length ? tasks.map((task, index) => `<li class="${task.done ? "done" : ""}"><input type="checkbox" data-task-toggle="${index}" ${task.done ? "checked" : ""} aria-label="Mark task complete"><span>${escapeHtml(task.text)}</span><button class="remove-task" type="button" data-task-remove="${index}" aria-label="Remove task"><i class="fas fa-xmark"></i></button></li>`).join("") : '<li class="empty-state">No tasks yet — make the next study session clear.</li>';
+    renderStudentPulse();
+  }
+  function wireStudyPlanner(){
+    const form = document.getElementById("taskForm"); const input = document.getElementById("taskInput"); const list = document.getElementById("taskList");
+    if (!form || !input || !list) return;
+    form.addEventListener("submit", event => { event.preventDefault(); const text = input.value.trim(); if (!text) return; const tasks = getTasks(); tasks.push({ text, done:false }); saveTasks(tasks); input.value = ""; renderTasks(); });
+    list.addEventListener("change", event => { if (!event.target.matches("[data-task-toggle]")) return; const tasks = getTasks(); tasks[Number(event.target.dataset.taskToggle)].done = event.target.checked; saveTasks(tasks); renderTasks(); });
+    list.addEventListener("click", event => { const button = event.target.closest("[data-task-remove]"); if (!button) return; const tasks = getTasks(); tasks.splice(Number(button.dataset.taskRemove), 1); saveTasks(tasks); renderTasks(); });
+    renderTasks();
+  }
+
+  let focusTimerInterval = null;
+  function stopFocusTimer(){ if (focusTimerInterval){ clearInterval(focusTimerInterval); focusTimerInterval = null; } document.title = "BU CSE Batch-13 — Ballistic-15"; }
+  function wireFocusTimer(){
+    stopFocusTimer();
+    const display = document.getElementById("timerDisplay"); const duration = document.getElementById("timerDuration"); const start = document.getElementById("timerStart"); const reset = document.getElementById("timerReset");
+    if (!display || !duration || !start || !reset) return;
+    let secondsLeft = Number(duration.value) * 60; let isRunning = false;
+    function draw(){ const mins = Math.floor(secondsLeft / 60); const secs = secondsLeft % 60; display.textContent = `${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}`; document.title = isRunning ? `${display.textContent} · Focus | BU CSE Batch-13` : "BU CSE Batch-13 — Ballistic-15"; }
+    function pause(){ stopFocusTimer(); isRunning = false; start.textContent = "Resume"; duration.disabled = false; draw(); }
+    start.addEventListener("click", () => {
+      if (isRunning){ pause(); return; }
+      isRunning = true; start.textContent = "Pause"; duration.disabled = true; draw();
+      focusTimerInterval = setInterval(() => { secondsLeft -= 1; if (secondsLeft <= 0){ secondsLeft = 0; stopFocusTimer(); isRunning = false; start.textContent = "Start again"; duration.disabled = false; draw(); toast("Focus session complete — take a short break.", "fa-circle-check"); return; } draw(); }, 1000);
+    });
+    reset.addEventListener("click", () => { stopFocusTimer(); isRunning = false; secondsLeft = Number(duration.value) * 60; start.textContent = "Start"; duration.disabled = false; draw(); });
+    duration.addEventListener("change", () => { if (!isRunning){ secondsLeft = Number(duration.value) * 60; draw(); } });
+    draw();
+  }
+
+  const COURSE_PROGRESS_KEY = "bu-cse-course-progress";
+  function getCourseProgress(){ try{ return JSON.parse(localStorage.getItem(COURSE_PROGRESS_KEY) || "{}"); }catch(e){ return {}; } }
+  function renderCourseProgress(){
+    const checklist = document.getElementById("courseChecklist"); const label = document.getElementById("courseProgressLabel"); const bar = document.getElementById("courseProgressBar");
+    if (!checklist || !label || !bar) return;
+    const progress = getCourseProgress();
+    const done = siteData.courses.filter(course => progress[course.code]).length;
+    checklist.innerHTML = siteData.courses.map(course => `<li><label><input type="checkbox" data-course-progress="${escapeHtml(course.code)}" ${progress[course.code] ? "checked" : ""}><span>${escapeHtml(course.code)} · ${escapeHtml(course.title)}</span></label></li>`).join("");
+    label.textContent = `${done} / ${siteData.courses.length} reviewed`;
+    bar.style.width = `${siteData.courses.length ? (done / siteData.courses.length) * 100 : 0}%`;
+    renderStudentPulse();
+  }
+  function wireCourseProgress(){
+    const checklist = document.getElementById("courseChecklist");
+    if (!checklist) return;
+    checklist.addEventListener("change", event => { const input = event.target.closest("[data-course-progress]"); if (!input) return; const progress = getCourseProgress(); progress[input.dataset.courseProgress] = input.checked; try{ localStorage.setItem(COURSE_PROGRESS_KEY, JSON.stringify(progress)); }catch(e){} renderCourseProgress(); });
+    renderCourseProgress();
+  }
+
+  /* ---------- Roster: search, sort, export, print ---------- */
+  let rosterSortMode = "roll"; // 'roll' | 'az' | 'za'
+
+  function getSortedRoster(){
+    const indexed = participants.map((name, i) => ({ name, roll: i + 1 }));
+    if (rosterSortMode === "az") indexed.sort((a,b) => a.name.localeCompare(b.name));
+    if (rosterSortMode === "za") indexed.sort((a,b) => b.name.localeCompare(a.name));
+    return indexed;
+  }
+
+  function renderRoster(filter){
+    const tbody = document.getElementById("participantTableBody");
+    const countEl = document.getElementById("rosterCount");
+    if (!tbody) return;
+    const q = (filter || "").trim().toLowerCase();
+    const list = getSortedRoster();
+    const filtered = q ? list.filter(p => p.name.toLowerCase().includes(q)) : list;
+
+    if (countEl) countEl.textContent = q ? `${filtered.length} of ${participants.length}` : `${participants.length} members`;
+
+    if (filtered.length === 0){
+      tbody.innerHTML = `<tr><td colspan="2" class="no-results">No name matches "${escapeHtml(filter)}".</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = filtered.map(p => `
+      <tr><td class="serial-no">${String(p.roll).padStart(2,"0")}</td><td>${escapeHtml(p.name)}</td></tr>
+    `).join("");
+  }
+
+  function downloadCsv(){
+    const rows = [["Roll", "Name"], ...getSortedRoster().map(p => [p.roll, p.name])];
+    const csv = rows.map(r => r.map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "bu-cse-batch13-roster.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    toast("Roster exported as CSV", "fa-file-csv");
+  }
+
+  function wireHomeInteractions(){
+    const searchInput = document.getElementById("participantSearch");
+    if (searchInput) searchInput.addEventListener("input", e => renderRoster(e.target.value));
+
+    const githubCard = document.getElementById("githubCard");
+    if (githubCard) githubCard.href = `https://github.com/${GITHUB_REPO}`;
+
+    const sortBtn = document.getElementById("sortToggle");
+    const sortLabel = document.getElementById("sortLabel");
+    const nameSortBtn = document.getElementById("nameSortBtn");
+    function cycleSort(){
+      rosterSortMode = rosterSortMode === "roll" ? "az" : rosterSortMode === "az" ? "za" : "roll";
+      sortLabel.textContent = rosterSortMode === "roll" ? "Roll order" : rosterSortMode === "az" ? "A → Z" : "Z → A";
+      renderRoster(searchInput ? searchInput.value : "");
+    }
+    if (sortBtn) sortBtn.addEventListener("click", cycleSort);
+    if (nameSortBtn) nameSortBtn.addEventListener("click", cycleSort);
+
+    const exportBtn = document.getElementById("exportCsv");
+    if (exportBtn) exportBtn.addEventListener("click", downloadCsv);
+
+    const printBtn = document.getElementById("printRoster");
+    if (printBtn) printBtn.addEventListener("click", () => window.print());
+
+    const heroSearch = document.getElementById("openSearchHero");
+    if (heroSearch) heroSearch.addEventListener("click", openCmdk);
+
+    document.querySelectorAll("[data-member-count]").forEach(el => el.textContent = participants.length);
+    renderLearningSnapshot();
+    const updatesPreview = document.getElementById("updatesPreview");
+    if (updatesPreview) updatesPreview.innerHTML = renderUpdateItems(3);
+    renderCoursePreview();
+    wireStudyPlanner();
+    wireFocusTimer();
+    wireCourseProgress();
+    renderRoster("");
+    setupScrollspy();
+  }
+
+  /* ---------- Scrollspy on home sections ---------- */
+  let spyObserver = null;
+  function setupScrollspy(){
+    if (spyObserver) spyObserver.disconnect();
+    const targets = { "quick-links": "navHome", "announcements": "navHome", "participants": "navParticipants" };
+    spyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) setActiveNav(targets[entry.target.id]); });
+    }, { rootMargin: "-40% 0px -50% 0px" });
+    Object.keys(targets).forEach(id => { const el = document.getElementById(id); if (el) spyObserver.observe(el); });
+  }
+
+  /* ---------- Rendering: home shell + fetched pages ---------- */
+  function renderHome(){
+    const tpl = document.getElementById("homeTemplate");
+    mainEl.innerHTML = "";
+    mainEl.appendChild(tpl.content.cloneNode(true));
+    wireHomeInteractions();
+    progressBar.style.width = "0%";
+  }
+
+  function scrollToSection(id){
+    requestAnimationFrame(() => {
+      const target = document.getElementById(id);
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  function pageShell(label, content){
+    mainEl.innerHTML = `<div class="section"><div class="page-toolbar"><button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> Back to home</button><div class="breadcrumb">Home / <span>${escapeHtml(label)}</span></div></div>${content}</div>`;
+    document.getElementById("backBtn").addEventListener("click", () => navigate(""));
+    window.scrollTo({ top:0, behavior:"smooth" });
+  }
+
+  function renderUpdatesPage(){
+    pageShell("Notices & class announcements", `<div class="markdown-content"><h1>Notices &amp; class announcements</h1><p>Class schedules and important batch notices are kept in one clear feed. Check the date before making plans.</p><div class="timeline" style="margin-top:26px">${renderUpdateItems()}</div></div>`);
+  }
+
+  const SAVED_RESOURCES_KEY = "bu-cse-saved-resources";
+  function getSavedResources(){ try{ return JSON.parse(localStorage.getItem(SAVED_RESOURCES_KEY) || "[]"); }catch(e){ return []; } }
+  function saveSavedResources(resources){ try{ localStorage.setItem(SAVED_RESOURCES_KEY, JSON.stringify(resources)); }catch(e){} }
+
+  function renderResourcesPage(){
+    const areas = ["All", "Saved", ...new Set(siteData.resources.map(item => item.area))];
+    pageShell("Study resources", `<div class="markdown-content"><h1>Study resources</h1><p>Curated starting points for first-semester learning. Save the resources you want to return to, then use one consistently.</p><div class="resource-filter" id="resourceFilters">${areas.map((area, index) => `<button class="filter-btn ${index === 0 ? "active" : ""}" type="button" data-resource-area="${escapeHtml(area)}">${area === "Saved" ? '<i class="fas fa-bookmark"></i> ' : ""}${escapeHtml(area)}</button>`).join("")}</div><div class="resource-grid" id="resourceGrid"></div></div>`);
+    const grid = document.getElementById("resourceGrid");
+    function draw(area){
+      const saved = getSavedResources();
+      const items = siteData.resources.filter(item => area === "All" || (area === "Saved" ? saved.includes(item.url) : item.area === area));
+      grid.innerHTML = items.map(item => { const isSaved = saved.includes(item.url); return `<div class="resource-card-wrap"><a class="resource-card" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer"><div class="resource-meta">${escapeHtml(item.area)} · ${escapeHtml(item.format)}</div><h3>${escapeHtml(item.title)} <i class="fas fa-arrow-up-right-from-square" style="font-size:.72em"></i></h3><p>${escapeHtml(item.note)}</p></a><button class="save-resource ${isSaved ? "saved" : ""}" type="button" data-resource-save="${escapeHtml(item.url)}" aria-pressed="${isSaved}" aria-label="${isSaved ? "Remove" : "Save"} ${escapeHtml(item.title)}" title="${isSaved ? "Remove from saved" : "Save resource"}"><i class="${isSaved ? "fas" : "far"} fa-bookmark"></i></button></div>`; }).join("") || `<p class="empty-state">${area === "Saved" ? "No saved resources yet — use the bookmark button to build your learning library." : "No resources in this subject yet."}</p>`;
+    }
+    let activeArea = "All";
+    document.getElementById("resourceFilters").addEventListener("click", event => { const button = event.target.closest("[data-resource-area]"); if (!button) return; activeArea = button.dataset.resourceArea; document.querySelectorAll("[data-resource-area]").forEach(el => el.classList.toggle("active", el === button)); draw(activeArea); });
+    grid.addEventListener("click", event => { const button = event.target.closest("[data-resource-save]"); if (!button) return; const url = button.dataset.resourceSave; const saved = getSavedResources(); const next = saved.includes(url) ? saved.filter(item => item !== url) : [...saved, url]; saveSavedResources(next); draw(activeArea); toast(next.includes(url) ? "Resource saved" : "Resource removed from saved", "fa-bookmark"); });
+    draw(activeArea);
+  }
+
+  function renderSyllabusPage(){
+    const syllabus = siteData.syllabus || {};
+    const rows = siteData.courses.map(course => `<tr data-syllabus-course="${escapeHtml(`${course.code} ${course.title} ${course.status} ${course.area}`)}"><td><strong>${escapeHtml(course.code)}</strong></td><td>${escapeHtml(course.title)}</td><td>${escapeHtml(course.status || "—")}</td><td>${escapeHtml(course.theory || "—")}</td><td>${escapeHtml(course.sessional || "—")}</td><td>${escapeHtml(course.credit)}</td></tr>`).join("");
+    const cards = siteData.courses.map(course => `<article class="course-card" data-syllabus-course="${escapeHtml(`${course.code} ${course.title} ${course.status} ${course.area}`)}"><div class="course-code">${escapeHtml(course.code)} · ${escapeHtml(course.credit)} credits</div><h3>${escapeHtml(course.title)}</h3><p><b>${escapeHtml(course.status || "—")}</b> · Theory ${escapeHtml(course.theory || "—")} · Sessional ${escapeHtml(course.sessional || "—")}</p><p style="margin-top:10px">${escapeHtml(course.focus)}</p><p style="margin-top:10px"><b>Study habit:</b> ${escapeHtml(course.practice)}</p></article>`).join("");
+    pageShell("Semester syllabus", `<div class="markdown-content"><h1>${escapeHtml(syllabus.term || "First-semester")} syllabus</h1><p>Course status, weekly contact hours, credits, and a practical study guide—based on the supplied course-distribution table.</p><div class="insight-strip" style="max-width:none;margin:22px 0;padding:0;grid-template-columns:repeat(3,1fr)"><div class="insight-stat"><div class="label"><i class="fas fa-clock"></i> Theory hours / week</div><strong>${escapeHtml(syllabus.theoryHours || "—")}</strong><span>official total</span></div><div class="insight-stat"><div class="label"><i class="fas fa-flask"></i> Sessional hours / week</div><strong>${escapeHtml(syllabus.sessionalHours || "—")}</strong><span>official total</span></div><div class="insight-stat"><div class="label"><i class="fas fa-graduation-cap"></i> Total credit load</div><strong>${escapeHtml(syllabus.totalCredits || "—")}</strong><span>official table total</span></div></div><label class="syllabus-search"><i class="fas fa-magnifying-glass"></i><input id="syllabusSearch" type="search" placeholder="Search by course code, name, status, or area" aria-label="Search syllabus"></label><div style="overflow-x:auto"><table><thead><tr><th>Code</th><th>Course</th><th>Status</th><th>Theory</th><th>Sessional</th><th>Credit</th></tr></thead><tbody>${rows}</tbody></table></div><p class="fine" style="text-align:left;margin-top:10px">${escapeHtml(syllabus.sourceNote || "")}</p><h2>Study guide by course</h2><div class="course-list">${cards}</div></div>`);
+    document.getElementById("syllabusSearch").addEventListener("input", event => { const query = event.target.value.trim().toLowerCase(); document.querySelectorAll("[data-syllabus-course]").forEach(item => item.classList.toggle("syllabus-hidden", Boolean(query) && !item.dataset.syllabusCourse.toLowerCase().includes(query))); });
+  }
+
+  async function renderPage(route){
+    mainEl.innerHTML = `<div class="section"><div class="loading"><i class="fas fa-spinner"></i><p style="margin-top:12px">Loading ${escapeHtml(route.label)}…</p></div></div>`;
+    progressBar.style.width = "30%";
+
+    try{
+      if (location.protocol === "file:"){
+        throw new Error("This page is open as a local file, so the browser blocks fetching other files (CORS). Serve the folder with a local server (e.g. `npx serve`) or via GitHub Pages instead.");
+      }
+      const response = await fetch(route.file);
+      progressBar.style.width = "70%";
+      if (!response.ok) throw new Error(`File not found (HTTP ${response.status})`);
+      const text = await response.text();
+      const htmlContent = route.file.endsWith(".md") ? marked.parse(text) : `<div class="txt-block">${escapeHtml(text)}</div>`;
+
+      mainEl.innerHTML = `
+        <div class="section">
+          <div class="page-toolbar">
+            <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> Back to home</button>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span class="breadcrumb">Home / <span>${escapeHtml(route.label)}</span></span>
+              <button class="tool-btn" id="copyLinkBtn"><i class="fas fa-link"></i> Copy link</button>
+            </div>
+          </div>
+          <div class="markdown-content">${htmlContent}</div>
+        </div>
+      `;
+      document.getElementById("backBtn").addEventListener("click", () => navigate(""));
+      document.getElementById("copyLinkBtn").addEventListener("click", async () => {
+        try{ await navigator.clipboard.writeText(location.href); toast("Link copied to clipboard", "fa-link"); }
+        catch(e){ toast("Couldn't copy — copy the URL manually", "fa-triangle-exclamation"); }
+      });
+      progressBar.style.width = "100%";
+      setTimeout(() => progressBar.style.width = "0%", 300);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+    }catch(error){
+      mainEl.innerHTML = `
+        <div class="section">
+          <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> Back to home</button>
+          <div class="markdown-content" style="margin-top:18px">
+            <h2>Couldn't load this page</h2>
+            <p><code>${escapeHtml(route.file)}</code> — ${escapeHtml(error.message)}</p>
+          </div>
+        </div>
+      `;
+      document.getElementById("backBtn").addEventListener("click", () => navigate(""));
+      progressBar.style.width = "0%";
+    }
+  }
+
+  /* ---------- Routing: clean slugs, e.g. #/resources, #/participants ---------- */
+  function slugToHash(slug){ return slug ? `#/${slug}` : "#/"; }
+  function currentSlug(){ return (location.hash || "#/").replace(/^#\/?/, ""); }
+
+  function render(){
+    const slug = currentSlug();
+    const route = routes[slug] || routes[""];
+    if (route.type !== "home" && route.type !== "scroll") stopFocusTimer();
+    setActiveNav(route.navId);
+
+    if (route.type === "home"){
+      renderHome();
+    } else if (route.type === "scroll"){
+      if (!document.getElementById("home")) renderHome();
+      scrollToSection(route.target);
+    } else if (route.type === "updates") {
+      renderUpdatesPage();
+    } else if (route.type === "resources") {
+      renderResourcesPage();
+    } else if (route.type === "syllabus") {
+      renderSyllabusPage();
+    } else {
+      renderPage(route);
+    }
+  }
+
+  // Use this everywhere instead of touching location.hash directly, so a click on
+  // the already-active route still re-runs render() (e.g. re-scrolling to Participants).
+  function navigate(slug){
+    const target = slugToHash(slug);
+    if (location.hash === target) render();
+    else location.hash = target;
+  }
+
+  window.addEventListener("hashchange", render);
+
+  /* ---------- Click delegation ---------- */
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest("[data-route]");
+    if (el){ closeMobileMenu(); navigate(el.getAttribute("data-route")); return; }
+    if (e.target.closest("#navHomeBtn")){ closeMobileMenu(); navigate(""); return; }
+  });
+
+  /* ---------- Command palette ---------- */
+  const overlay = document.getElementById("cmdkOverlay");
+  const cmdkInput = document.getElementById("cmdkInput");
+  const cmdkList = document.getElementById("cmdkList");
+  let cmdkItems = [];
+  let cmdkSelected = 0;
+  let lastFocused = null;
+
+  const pageRouteList = Object.keys(routes)
+    .filter(slug => slug !== "")
+    .map(slug => ({ slug, ...routes[slug] }));
+
+  function rank(name, q){
+    const lower = name.toLowerCase();
+    if (lower === q) return 0;
+    if (lower.startsWith(q)) return 1;
+    return 2;
+  }
+
+  function buildCmdkItems(query){
+    const q = query.trim().toLowerCase();
+    const pageMatches = pageRouteList
+      .filter(p => !q || p.label.toLowerCase().includes(q))
+      .sort((a,b) => rank(a.label, q) - rank(b.label, q))
+      .map(p => ({ type:"route", slug:p.slug, label:p.label, icon:p.icon }));
+
+    let nameMatches = [];
+    if (q){
+      nameMatches = participants
+        .map((name, i) => ({ name, roll: i+1 }))
+        .filter(p => p.name.toLowerCase().includes(q) || String(p.roll).padStart(2,"0").startsWith(q))
+        .sort((a,b) => rank(a.name, q) - rank(b.name, q))
+        .slice(0, 8)
+        .map(p => ({ type:"person", label:p.name, roll:p.roll }));
+    }
+    return { pageMatches, nameMatches };
+  }
+
+  function renderCmdk(query){
+    const { pageMatches, nameMatches } = buildCmdkItems(query);
+    cmdkItems = [...pageMatches, ...nameMatches];
+    cmdkSelected = 0;
+
+    if (cmdkItems.length === 0){
+      cmdkList.innerHTML = `<div class="cmdk-empty">No matches for "${escapeHtml(query)}"</div>`;
+      return;
+    }
+    let html = "";
+    if (pageMatches.length){
+      html += `<div class="cmdk-group-label">Pages</div>`;
+      pageMatches.forEach((p, i) => { html += `<div class="cmdk-item" data-index="${i}"><i class="fas ${p.icon}"></i><span>${escapeHtml(p.label)}</span><span class="hint">Go to</span></div>`; });
+    }
+    if (nameMatches.length){
+      html += `<div class="cmdk-group-label">Roster</div>`;
+      nameMatches.forEach((p, i) => { html += `<div class="cmdk-item" data-index="${pageMatches.length + i}"><i class="fas fa-user"></i><span>${escapeHtml(p.label)}</span><span class="hint">#${String(p.roll).padStart(2,"0")}</span></div>`; });
+    }
+    cmdkList.innerHTML = html;
+    highlightCmdk();
+  }
+
+  function highlightCmdk(){
+    cmdkList.querySelectorAll(".cmdk-item").forEach(el => {
+      el.classList.toggle("selected", Number(el.getAttribute("data-index")) === cmdkSelected);
+    });
+    const sel = cmdkList.querySelector(".cmdk-item.selected");
+    if (sel) sel.scrollIntoView({ block: "nearest" });
+  }
+
+  function activateCmdkItem(item){
+    if (!item) return;
+    if (item.type === "route"){ closeCmdk(); navigate(item.slug); }
+    else if (item.type === "person"){
+      closeCmdk(); navigate("participants");
+      setTimeout(() => { const input = document.getElementById("participantSearch"); if (input){ input.value = item.label; renderRoster(item.label); } }, 250);
+    }
+  }
+
+  function openCmdk(){
+    lastFocused = document.activeElement;
+    overlay.classList.add("open");
+    cmdkInput.value = "";
+    renderCmdk("");
+    setTimeout(() => cmdkInput.focus(), 10);
+  }
+  function closeCmdk(){
+    overlay.classList.remove("open");
+    if (lastFocused && lastFocused.focus) lastFocused.focus();
+  }
+
+  document.getElementById("openSearchNav").addEventListener("click", openCmdk);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) closeCmdk(); });
+  cmdkInput.addEventListener("input", (e) => renderCmdk(e.target.value));
+  cmdkList.addEventListener("click", (e) => {
+    const item = e.target.closest(".cmdk-item");
+    if (item) activateCmdkItem(cmdkItems[Number(item.getAttribute("data-index"))]);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    const isMac = navigator.platform.toUpperCase().includes("MAC");
+    const modifier = isMac ? e.metaKey : e.ctrlKey;
+    if (modifier && e.key.toLowerCase() === "k"){ e.preventDefault(); overlay.classList.contains("open") ? closeCmdk() : openCmdk(); return; }
+    if (!overlay.classList.contains("open")) return;
+    if (e.key === "Escape"){ closeCmdk(); return; }
+    if (e.key === "ArrowDown"){ e.preventDefault(); cmdkSelected = Math.min(cmdkSelected + 1, cmdkItems.length - 1); highlightCmdk(); return; }
+    if (e.key === "ArrowUp"){ e.preventDefault(); cmdkSelected = Math.max(cmdkSelected - 1, 0); highlightCmdk(); return; }
+    if (e.key === "Enter"){ e.preventDefault(); activateCmdkItem(cmdkItems[cmdkSelected]); return; }
+  });
+
+  /* ---------- Back-to-top ---------- */
+  window.addEventListener("scroll", () => { toTopBtn.classList.toggle("visible", window.scrollY > 480); }, { passive: true });
+  toTopBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+  /* ---------- Init ---------- */
+  document.addEventListener("DOMContentLoaded", render);
+})();
+</script>
+
+</body>
+</html>

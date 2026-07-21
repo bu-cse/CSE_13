@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BU CSE Batch-13 — Ballistic-15</title>
+<meta name="description" content="Home for the CSE Batch-13 (Ballistic-15) community at University of Barishal — notes, resources, projects and the batch roster.">
+<meta name="theme-color" content="#223466">
+
+<!-- Set theme before first paint to avoid a flash of the wrong theme -->
+<script>
+(function(){
+  try{
+    var saved = localStorage.getItem('bu-cse-theme');
+    var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  }catch(e){}
+})();
+</script>
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23223466'/%3E%3Ctext x='50' y='68' font-size='54' font-family='monospace' fill='%23F2C572' text-anchor='middle'%3E13%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+
+<style>
+  :root{
+    --ink:#1B1D29; --muted:#6B6F7A; --paper:#FAFAF7; --surface:#FFFFFF; --line:#E4E2DC;
+    --navy:#223466; --navy-deep:#17284D; --amber:#C98A2B; --amber-soft:#F2C572;
+    --mono-bg:#141A2E; --mono-text:#D7DBE8; --mono-key:#8FB4FF; --mono-str:#F2C572; --mono-num:#7FD1A8;
+    --success:#3C8B5B; --danger:#C24545;
+    --radius:10px; --shadow:0 1px 2px rgba(20,20,30,.04), 0 8px 24px rgba(20,20,30,.06);
+    --overlay:rgba(15,17,26,.55);
+  }
+  :root[data-theme="dark"]{
+    --ink:#E7E9F0; --muted:#8D93A8; --paper:#0F1320; --surface:#161B2C; --line:#262C42;
+    --navy:#7C9DFF; --navy-deep:#9FB6FF; --amber:#F2C572; --amber-soft:#F2C572;
+    --mono-bg:#0B0E19; --mono-text:#D7DBE8;
+    --success:#5FBE86; --danger:#E37272;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 28px rgba(0,0,0,.4);
+    --overlay:rgba(0,0,0,.65);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+  }
+
+  body{
+    font-family:'Inter', 'Noto Sans Bengali', sans-serif;
+    background:var(--paper); color:var(--ink); line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    transition:background .2s, color .2s;
+  }
+
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; }
+  :focus-visible{ outline:2px solid var(--navy); outline-offset:2px; border-radius:4px; }
+  button{ font-family:inherit; background:none; border:none; cursor:pointer; color:inherit; }
+  kbd{
+    font-family:'IBM Plex Mono', monospace; font-size:.72rem; background:var(--paper);
+    border:1px solid var(--line); border-bottom-width:2px; border-radius:5px; padding:2px 6px; color:var(--muted);
+  }
+
+  .skip-link{
+    position:absolute; left:12px; top:-48px; background:var(--navy); color:#fff; padding:10px 16px;
+    border-radius:8px; z-index:2000; font-size:.85rem; transition:top .15s;
+  }
+  .skip-link:focus{ top:12px; }
+
+  /* progress bar for long/loaded pages */
+  #progressBar{
+    position:fixed; top:0; left:0; height:2px; background:var(--navy); z-index:1200; width:0%;
+    transition:width .1s ease-out;
+  }
+
+  /* ===== NAV ===== */
+  nav{ background:var(--surface); border-bottom:1px solid var(--line); position:sticky; top:0; z-index:1000; }
+  .nav-container{ max-width:1180px; margin:0 auto; padding:14px 24px; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .nav-logo{ display:flex; align-items:center; gap:10px; font-weight:600; font-size:1rem; }
+  .nav-logo .mark{ width:30px; height:30px; border-radius:7px; background:var(--navy); color:#12172A; font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:.8rem; display:flex; align-items:center; justify-content:center; }
+  .nav-logo .tag{ color:var(--muted); font-size:.78rem; font-family:'IBM Plex Mono', monospace; margin-left:2px; }
+
+  .nav-mid{ display:flex; gap:6px; list-style:none; align-items:center; }
+  .nav-mid button{ color:var(--muted); font-size:.87rem; font-weight:500; padding:8px 12px; border-radius:7px; transition:color .15s, background .15s; white-space:nowrap; }
+  .nav-mid button:hover{ color:var(--ink); background:var(--paper); }
+  .nav-mid button.active{ color:var(--navy); font-weight:600; }
+
+  .nav-right{ display:flex; align-items:center; gap:6px; }
+  .icon-btn{
+    width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+    color:var(--muted); transition:background .15s, color .15s; font-size:.95rem;
+  }
+  .icon-btn:hover{ background:var(--paper); color:var(--ink); }
+
+  .search-trigger{
+    display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:8px;
+    padding:7px 10px; color:var(--muted); font-size:.83rem; background:var(--paper);
+  }
+  .search-trigger:hover{ border-color:var(--navy); color:var(--ink); }
+
+  .hamburger{ display:none; font-size:1.1rem; }
+
+  /* ===== HERO ===== */
+  .hero{ max-width:1180px; margin:0 auto; padding:64px 24px 56px; display:grid; grid-template-columns:1.1fr 1fr; gap:56px; align-items:center; }
+  .hero-eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:.78rem; letter-spacing:.08em; color:var(--navy); text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+  .hero-eyebrow .dot{ width:6px; height:6px; border-radius:50%; background:var(--success); display:inline-block; }
+  .hero h1{ font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:2.7rem; line-height:1.08; letter-spacing:-.01em; }
+  .hero h1 .accent{ color:var(--navy); }
+  .hero p.lede{ margin-top:16px; color:var(--muted); font-size:1.02rem; max-width:46ch; }
+  .hero-stats{ display:flex; gap:28px; margin-top:28px; }
+  .stat .n{ font-size:1.3rem; font-weight:600; font-family:'IBM Plex Mono', monospace; }
+  .stat .l{ font-size:.75rem; color:var(--muted); font-family:'IBM Plex Mono', monospace; }
+  .hero-cta{ margin-top:26px; display:flex; gap:10px; flex-wrap:wrap; }
+  .btn{ display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:8px; font-size:.87rem; font-weight:500; transition:all .15s; }
+  .btn-primary{ background:var(--navy); color:var(--paper); }
+  .btn-primary:hover{ background:var(--navy-deep); }
+  .btn-ghost{ border:1px solid var(--line); }
+  .btn-ghost:hover{ border-color:var(--navy); }
+
+  .manifest{ background:var(--mono-bg); border-radius:14px; overflow:hidden; box-shadow:var(--shadow); }
+  .manifest-bar{ display:flex; align-items:center; gap:8px; padding:12px 16px; border-bottom:1px solid rgba(255,255,255,.08); }
+  .manifest-bar .dots{ display:flex; gap:6px; }
+  .manifest-bar .dots span{ width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,.18); }
+  .manifest-bar .fname{ font-family:'IBM Plex Mono', monospace; font-size:.76rem; color:rgba(255,255,255,.5); margin-left:6px; }
+  .manifest pre{ font-family:'IBM Plex Mono', monospace; font-size:.86rem; line-height:1.9; padding:20px 22px; color:var(--mono-text); overflow-x:auto; }
+  .manifest .k{ color:var(--mono-key); } .manifest .s{ color:var(--mono-str); } .manifest .num{ color:var(--mono-num); } .manifest .p{ color:rgba(255,255,255,.35); }
+
+  @media (max-width:860px){ .hero{ grid-template-columns:1fr; padding-top:36px; gap:32px; } .hero h1{ font-size:2.1rem; } }
+
+  /* ===== SECTION SHELL ===== */
+  .section{ max-width:1180px; margin:0 auto; padding:52px 24px; scroll-margin-top:70px; }
+  .section + .section{ border-top:1px solid var(--line); }
+  .section-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:28px; gap:16px; flex-wrap:wrap; }
+  .section-head h2{ font-family:'Space Grotesk', sans-serif; font-size:1.4rem; font-weight:600; }
+  .section-head .count{ font-family:'IBM Plex Mono', monospace; font-size:.8rem; color:var(--muted); }
+
+  /* ===== QUICK LINK CARDS ===== */
+  .cards-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:14px; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:20px; text-align:left; display:flex; gap:14px; align-items:flex-start; transition:border-color .15s, transform .15s; text-decoration:none; }
+  .card:hover{ border-color:var(--navy); transform:translateY(-2px); }
+  .card i{ font-size:1.05rem; color:var(--navy); margin-top:2px; width:20px; text-align:center; }
+  .card h3{ font-size:.98rem; font-weight:600; margin-bottom:4px; }
+  .card p{ font-size:.84rem; color:var(--muted); }
+
+  /* ===== TIMELINE ===== */
+  .timeline{ position:relative; padding-left:26px; }
+  .timeline::before{ content:''; position:absolute; left:5px; top:6px; bottom:6px; width:1px; background:var(--line); }
+  .tl-item{ position:relative; padding-bottom:26px; }
+  .tl-item:last-child{ padding-bottom:0; }
+  .tl-item::before{ content:''; position:absolute; left:-26px; top:5px; width:9px; height:9px; border-radius:50%; background:var(--surface); border:2px solid var(--navy); }
+  .tl-date{ font-family:'IBM Plex Mono', monospace; font-size:.76rem; color:var(--muted); margin-bottom:4px; }
+  .tl-item h3{ font-size:.98rem; font-weight:600; margin-bottom:4px; }
+  .tl-item p{ font-size:.9rem; color:var(--muted); max-width:60ch; }
+
+  /* ===== PARTICIPANTS ===== */
+  .toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+  .search-box{ flex:1; min-width:200px; max-width:320px; display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:8px; padding:8px 12px; background:var(--surface); }
+  .search-box i{ color:var(--muted); font-size:.85rem; }
+  .search-box input{ border:none; outline:none; font-family:inherit; font-size:.88rem; width:100%; background:transparent; color:var(--ink); }
+  .tool-btn{ display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); border-radius:8px; padding:8px 12px; font-size:.83rem; color:var(--muted); transition:border-color .15s, color .15s; }
+  .tool-btn:hover{ border-color:var(--navy); color:var(--ink); }
+  .table-container{ border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:var(--surface); }
+  table{ width:100%; border-collapse:collapse; }
+  th{ background:var(--paper); color:var(--muted); padding:10px 18px; text-align:left; font-size:.72rem; font-family:'IBM Plex Mono', monospace; letter-spacing:.06em; text-transform:uppercase; border-bottom:1px solid var(--line); }
+  th button{ display:flex; align-items:center; gap:6px; color:inherit; font:inherit; text-transform:inherit; letter-spacing:inherit; }
+  td{ padding:11px 18px; border-bottom:1px solid var(--line); font-size:.92rem; }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:hover td{ background:var(--paper); }
+  .serial-no{ font-family:'IBM Plex Mono', monospace; color:var(--muted); width:44px; }
+  .no-results{ padding:24px 18px; color:var(--muted); font-size:.9rem; text-align:center; }
+
+  /* ===== MARKDOWN PAGE VIEW ===== */
+  .page-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; gap:12px; flex-wrap:wrap; }
+  .breadcrumb{ font-size:.8rem; color:var(--muted); font-family:'IBM Plex Mono', monospace; }
+  .breadcrumb span{ color:var(--ink); }
+  .markdown-content{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:34px 40px; line-height:1.8; }
+  .markdown-content h1{ font-family:'Space Grotesk',sans-serif; font-size:1.7rem; margin:0 0 14px; }
+  .markdown-content h2{ font-family:'Space Grotesk',sans-serif; color:var(--navy); font-size:1.3rem; margin:22px 0 10px; border-bottom:1px solid var(--line); padding-bottom:8px; }
+  .markdown-content h3{ font-size:1.05rem; margin:16px 0 8px; }
+  .markdown-content p{ margin:10px 0; }
+  .markdown-content ul, .markdown-content ol{ margin:10px 0 10px 22px; }
+  .markdown-content a{ color:var(--navy); text-decoration:underline; text-underline-offset:2px; }
+  .markdown-content code{ font-family:'IBM Plex Mono',monospace; background:var(--paper); padding:2px 6px; border-radius:4px; font-size:.86rem; }
+  .markdown-content pre{ background:var(--mono-bg); color:var(--mono-text); padding:16px 20px; border-radius:8px; overflow-x:auto; margin:14px 0; }
+  .markdown-content pre code{ background:none; color:inherit; padding:0; }
+  .markdown-content table{ width:100%; border-collapse:collapse; margin:14px 0; }
+  .markdown-content th{ background:var(--navy); color:#fff; padding:9px 14px; text-transform:none; letter-spacing:0; font-family:'Inter',sans-serif; font-size:.85rem; }
+  .markdown-content td{ padding:9px 14px; }
+  .markdown-content blockquote{ border-left:3px solid var(--navy); padding:8px 18px; margin:14px 0; background:var(--paper); color:var(--muted); }
+  .markdown-content img{ max-width:100%; border-radius:8px; margin:10px 0; }
+  .txt-block{ white-space:pre-wrap; font-family:'IBM Plex Mono', monospace; font-size:.88rem; background:var(--mono-bg); color:var(--mono-text); padding:22px 24px; border-radius:8px; line-height:1.8; }
+
+  .loading{ text-align:center; padding:60px 20px; color:var(--muted); }
+  .loading i{ font-size:1.4rem; animation:spin 1s linear infinite; }
+  @keyframes spin{ from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
+
+  .back-btn{ display:inline-flex; align-items:center; gap:8px; padding:8px 14px; background:var(--surface); border:1px solid var(--line); border-radius:8px; font-size:.86rem; font-weight:500; transition:border-color .15s; }
+  .back-btn:hover{ border-color:var(--navy); }
+
+  /* ===== COMMAND PALETTE ===== */
+  .cmdk-overlay{ position:fixed; inset:0; background:var(--overlay); z-index:1500; display:none; align-items:flex-start; justify-content:center; padding:12vh 20px 20px; }
+  .cmdk-overlay.open{ display:flex; }
+  .cmdk-panel{ width:100%; max-width:560px; background:var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,.3); overflow:hidden; }
+  .cmdk-input-row{ display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid var(--line); }
+  .cmdk-input-row i{ color:var(--muted); }
+  .cmdk-input-row input{ flex:1; border:none; outline:none; background:transparent; font-family:inherit; font-size:.95rem; color:var(--ink); }
+  .cmdk-input-row kbd{ font-size:.7rem; }
+  .cmdk-list{ max-height:360px; overflow-y:auto; padding:8px; }
+  .cmdk-group-label{ font-family:'IBM Plex Mono', monospace; font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; padding:10px 10px 4px; }
+  .cmdk-item{ display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px; font-size:.88rem; cursor:pointer; }
+  .cmdk-item i{ color:var(--muted); width:16px; text-align:center; }
+  .cmdk-item.selected{ background:var(--paper); }
+  .cmdk-item .hint{ margin-left:auto; font-size:.72rem; color:var(--muted); font-family:'IBM Plex Mono', monospace; }
+  .cmdk-empty{ padding:24px; text-align:center; color:var(--muted); font-size:.88rem; }
+
+  /* ===== TOASTS ===== */
+  .toast-stack{ position:fixed; top:16px; right:16px; z-index:2000; display:flex; flex-direction:column; gap:8px; }
+  .toast{ background:var(--ink); color:var(--paper); padding:10px 16px; border-radius:8px; font-size:.85rem; box-shadow:var(--shadow); display:flex; align-items:center; gap:8px; animation:toastIn .18s ease-out; }
+  @keyframes toastIn{ from{ opacity:0; transform:translateY(-6px);} to{ opacity:1; transform:translateY(0);} }
+
+  /* ===== BACK TO TOP ===== */
+  .to-top{ position:fixed; right:20px; bottom:20px; width:42px; height:42px; border-radius:50%; background:var(--navy); color:var(--paper); display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:900; }
+  .to-top.visible{ opacity:1; pointer-events:auto; }
+  .to-top:hover{ transform:translateY(-2px); }
+
+  /* ===== FOOTER ===== */
+  footer{ border-top:1px solid var(--line); padding:36px 24px; }
+  .footer-inner{ max-width:1180px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+  .footer-links{ display:flex; gap:22px; list-style:none; flex-wrap:wrap; }
+  .footer-links button{ color:var(--muted); font-size:.85rem; }
+  .footer-links button:hover{ color:var(--ink); }
+  .social-icons{ display:flex; gap:16px; }
+  .social-icons a{ color:var(--muted); font-size:1.05rem; transition:color .15s; }
+  .social-icons a:hover{ color:var(--navy); }
+  footer .fine{ font-size:.78rem; color:var(--muted); margin-top:14px; text-align:center; }
+
+  @media print{
+    nav, footer, .hero, #quick-links, #announcements, .toolbar, .to-top, .toast-stack, #progressBar{ display:none !important; }
+    body{ background:#fff; color:#000; }
+  }
+
+  @media (max-width:768px){
+    .nav-mid{ display:none; flex-direction:column; align-items:stretch; position:absolute; top:100%; left:0; right:0; background:var(--surface); border-bottom:1px solid var(--line); padding:8px; gap:2px; }
+    .nav-mid.active{ display:flex; }
+    .nav-mid button{ text-align:left; width:100%; }
+    .hamburger{ display:block; }
+    .search-trigger span:not(.only-icon){ display:none; }
+    .section-head{ flex-direction:column; align-items:flex-start; }
+    .markdown-content{ padding:22px; }
+  }
+</style>
+</head>
+<body>
+<a href="#mainContent" class="skip-link">Skip to content</a>
+<div id="progressBar"></div>
+
+<template id="homeTemplate">
+  <section class="hero" id="home">
+    <div>
+      <p class="hero-eyebrow"><span class="dot"></span> University of Barishal · Dept. of CSE</p>
+      <h1>Batch 13 — <span class="accent">Ballistic-15</span></h1>
+      <p class="lede">The shared home base for our batch: notes, resources, project showcase and the full roster, kept in one place for the next four years.</p>
+      <div class="hero-stats">
+        <div class="stat"><div class="n">43</div><div class="l">members</div></div>
+        <div class="stat"><div class="n">04</div><div class="l">years</div></div>
+        <div class="stat"><div class="n">01</div><div class="l">batch</div></div>
+      </div>
+      <div class="hero-cta">
+        <button class="btn btn-primary" data-nav="participants/participant-list.txt"><i class="fas fa-users"></i> View roster</button>
+        <button class="btn btn-ghost" id="openSearchHero"><i class="fas fa-magnifying-glass"></i> Search <kbd>⌘K</kbd></button>
+      </div>
+    </div>
+    <div class="manifest" aria-hidden="true">
+      <div class="manifest-bar"><div class="dots"><span></span><span></span><span></span></div><span class="fname">batch.json</span></div>
+      <pre>{
+  <span class="k">"university"</span>: <span class="s">"Barishal"</span>,
+  <span class="k">"department"</span>: <span class="s">"CSE"</span>,
+  <span class="k">"batch"</span>: <span class="num">13</span>,
+  <span class="k">"callsign"</span>: <span class="s">"Ballistic-15"</span>,
+  <span class="k">"members"</span>: <span class="num">43</span>,
+  <span class="k">"founded"</span>: <span class="s">"2026-06-09"</span>
+<span class="p">}</span></pre>
+    </div>
+  </section>
+
+  <div class="section" id="quick-links">
+    <div class="section-head"><h2>Quick links</h2></div>
+    <div class="cards-grid">
+      <button class="card" data-nav="participants/participant-list.txt"><i class="fas fa-users"></i><div><h3>Participant list</h3><p>All 43 batch members</p></div></button>
+      <button class="card" data-nav="resources/README.md"><i class="fas fa-book"></i><div><h3>Study resources</h3><p>Books, links, learning material</p></div></button>
+      <button class="card" data-nav="notes/README.md"><i class="fas fa-note-sticky"></i><div><h3>Course notes</h3><p>Organized by semester</p></div></button>
+      <button class="card" data-nav="projects/README.md"><i class="fas fa-code-branch"></i><div><h3>Projects</h3><p>Group and individual work</p></div></button>
+      <a class="card" id="githubCard" href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i><div><h3>GitHub repository</h3><p>Contribute to the batch repo</p></div></a>
+      <button class="card" data-nav="CONTRIBUTING.md"><i class="fas fa-handshake"></i><div><h3>Contribution guide</h3><p>How to add or edit content</p></div></button>
+    </div>
+  </div>
+
+  <div class="section" id="announcements">
+    <div class="section-head"><h2>Announcements</h2></div>
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-date">June 22, 2026</div><h3>3rd merit list published</h3><p>Check the GST website for updates — final admission is expected soon.</p></div>
+      <div class="tl-item"><div class="tl-date">June 15, 2026</div><h3>Primary admission fee</h3><p>Primary admission fee (৳5,000) window: June 15–17. Documents due June 18.</p></div>
+      <div class="tl-item"><div class="tl-date">June 13, 2026</div><h3>Group decision poll</h3><p>Per the poll result, this stays our main discussion group for the next four years.</p></div>
+      <div class="tl-item"><div class="tl-date">June 9, 2026</div><h3>Group created</h3><p>Welcome to BU CSE Batch-13. Group renamed to "CSE (Batch-13)-BU 15" by Kazi Sadrif Sanve.</p></div>
+    </div>
+  </div>
+
+  <div class="section" id="participants">
+    <div class="section-head"><h2>Batch roster</h2><span class="count mono" id="rosterCount">43 members</span></div>
+    <div class="toolbar">
+      <div class="search-box"><i class="fas fa-magnifying-glass"></i><input type="text" id="participantSearch" placeholder="Search a name…" aria-label="Search the roster"></div>
+      <button class="tool-btn" id="sortToggle"><i class="fas fa-arrow-down-a-z"></i> <span id="sortLabel">Roll order</span></button>
+      <button class="tool-btn" id="exportCsv"><i class="fas fa-file-csv"></i> Export CSV</button>
+      <button class="tool-btn" id="printRoster"><i class="fas fa-print"></i> Print</button>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead><tr><th style="width:60px">#</th><th><button id="nameSortBtn">Name <i class="fas fa-sort" style="font-size:.7rem"></i></button></th></tr></thead>
+        <tbody id="participantTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<nav>
+  <div class="nav-container">
+    <button class="nav-logo" id="navHomeBtn" aria-label="Go to home"><span class="mark">13</span> BU CSE <span class="tag">batch-13</span></button>
+    <ul class="nav-mid" id="navLinks">
+      <li><button data-nav="" id="navHome" class="active">Home</button></li>
+      <li><button data-nav="README.md" id="navReadme">About</button></li>
+      <li><button data-nav="resources/README.md" id="navResources">Resources</button></li>
+      <li><button data-nav="notes/README.md" id="navNotes">Notes</button></li>
+      <li><button data-nav="projects/README.md" id="navProjects">Projects</button></li>
+      <li><button data-nav="CONTRIBUTING.md" id="navContribute">Contribute</button></li>
+      <li><button id="navParticipants">Participants</button></li>
+    </ul>
+    <div class="nav-right">
+      <button class="search-trigger" id="openSearchNav" aria-label="Open search"><i class="fas fa-magnifying-glass"></i><span>Search</span><kbd class="only-icon">⌘K</kbd></button>
+      <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
+      <button class="hamburger icon-btn" id="hamburgerBtn" aria-label="Toggle menu" aria-expanded="false"><i class="fas fa-bars"></i></button>
+    </div>
+  </div>
+</nav>
+
+<main id="mainContent"></main>
+
+<footer>
+  <div class="footer-inner">
+    <span class="mono" style="font-size:.85rem;color:var(--muted)">BU CSE Batch-13</span>
+    <ul class="footer-links">
+      <li><button data-nav="README.md">About</button></li>
+      <li><button id="footerParticipants">Participants</button></li>
+      <li><button data-nav="resources/README.md">Resources</button></li>
+      <li><button data-nav="CONTRIBUTING.md">Contribute</button></li>
+    </ul>
+    <div class="social-icons">
+      <a href="#" aria-label="Facebook group" title="Facebook"><i class="fab fa-facebook"></i></a>
+      <a href="#" aria-label="GitHub repository" title="GitHub"><i class="fab fa-github"></i></a>
+      <a href="#" aria-label="Discord server" title="Discord"><i class="fab fa-discord"></i></a>
+      <a href="#" aria-label="YouTube channel" title="YouTube"><i class="fab fa-youtube"></i></a>
+    </div>
+  </div>
+  <p class="fine">Made by BU CSE Batch-13, University of Barishal — © <span id="year"></span> Ballistic-15 · Press <kbd>⌘K</kbd> to search anywhere</p>
+</footer>
+
+<div class="cmdk-overlay" id="cmdkOverlay" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="cmdk-panel">
+    <div class="cmdk-input-row">
+      <i class="fas fa-magnifying-glass"></i>
+      <input type="text" id="cmdkInput" placeholder="Search pages or roster names…" autocomplete="off">
+      <kbd>Esc</kbd>
+    </div>
+    <div class="cmdk-list" id="cmdkList"></div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+<button class="to-top" id="toTop" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
+<script>
+(function(){
+  "use strict";
+
+  const GITHUB_REPO = "YOUR_USERNAME/BU-CSE-Batch-13"; // ← change this one line
+
+  const participants = [
+    "Shreoshi Roy Rayte", "Urmi Sarker", "Aysha Amman Maria",
+    "মো. আরাফাত রহমান নাহিদ", "Mehraz Uddin Showrov", "Mona Roy",
+    "Naimul Islam", "Biton Mondol", "Mehraj Hossain Mishal",
+    "আকাশ বিশ্বাস", "Fatima Afrin", "Disha Mondal",
+    "Musfika Usha", "Ifad Ul Hasan", "Al Shahariar Tamim",
+    "Rupuntor Abir", "Resma Akter", "Manik Halder",
+    "AbDul KaDer", "Riadul Hassan Rupok", "Tanvir Alom Sifat",
+    "Morsalin Mahin", "Tarannum Tannu", "Tasnuva Samia",
+    "Tajrian Tasin", "Kazi Sadrif Sanve", "Mohsina Akter",
+    "Sajjad Ullah", "Gopal Podder Ovi", "P R O Hor",
+    "Al Amin Hawlader", "Md Ashikur Rahman Siam", "Dî  Šhâ",
+    "Md Neon", "Shahriar Abir", "Gourob Paul Soumik",
+    "R H Rasib", "Serajum Munira", "MD Tasib Mahmud Nîløy",
+    "Afrin Antora", "Imran Hasan", "Musfika Hasan",
+    "Sojib Uddin"
+  ];
+
+  const pages = [
+    { label: "Home", path: "", icon: "fa-house" },
+    { label: "About", path: "README.md", icon: "fa-circle-info" },
+    { label: "Study resources", path: "resources/README.md", icon: "fa-book" },
+    { label: "Course notes", path: "notes/README.md", icon: "fa-note-sticky" },
+    { label: "Projects", path: "projects/README.md", icon: "fa-code-branch" },
+    { label: "Contribution guide", path: "CONTRIBUTING.md", icon: "fa-handshake" },
+    { label: "Participant roster", path: "participants/participant-list.txt", icon: "fa-users" }
+  ];
+
+  const navFileMap = {
+    "README.md": "navReadme", "resources/README.md": "navResources", "notes/README.md": "navNotes",
+    "projects/README.md": "navProjects", "CONTRIBUTING.md": "navContribute", "participants/participant-list.txt": "navParticipants"
+  };
+  const pageLabels = { "README.md":"About", "resources/README.md":"Resources", "notes/README.md":"Notes",
+    "projects/README.md":"Projects", "CONTRIBUTING.md":"Contribute", "participants/participant-list.txt":"Participants" };
+
+  const mainEl = document.getElementById("mainContent");
+  const navLinksEl = document.getElementById("navLinks");
+  const hamburgerBtn = document.getElementById("hamburgerBtn");
+  const progressBar = document.getElementById("progressBar");
+  const toastStack = document.getElementById("toastStack");
+  const toTopBtn = document.getElementById("toTop");
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  /* ---------- Theme toggle ---------- */
+  const themeToggle = document.getElementById("themeToggle");
+  function applyThemeIcon(){
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+  }
+  applyThemeIcon();
+  themeToggle.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem("bu-cse-theme", next); }catch(e){}
+    applyThemeIcon();
+  });
+
+  /* ---------- Toasts ---------- */
+  function toast(message, icon){
+    const el = document.createElement("div");
+    el.className = "toast";
+    el.innerHTML = `<i class="fas ${icon || 'fa-circle-check'}"></i><span>${message}</span>`;
+    toastStack.appendChild(el);
+    setTimeout(() => { el.style.opacity = "0"; el.style.transition = "opacity .2s"; setTimeout(() => el.remove(), 200); }, 2400);
+  }
+
+  /* ---------- Mobile menu ---------- */
+  function closeMobileMenu(){ navLinksEl.classList.remove("active"); hamburgerBtn.setAttribute("aria-expanded","false"); }
+  hamburgerBtn.addEventListener("click", () => {
+    const isOpen = navLinksEl.classList.toggle("active");
+    hamburgerBtn.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  function escapeHtml(text){
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function setActiveNav(activeId){
+    document.querySelectorAll(".nav-mid button").forEach(el => el.classList.remove("active"));
+    if (activeId){ const el = document.getElementById(activeId); if (el) el.classList.add("active"); }
+  }
+
+  /* ---------- Roster: search, sort, export, print ---------- */
+  let rosterSortMode = "roll"; // 'roll' | 'az' | 'za'
+
+  function getSortedRoster(){
+    const indexed = participants.map((name, i) => ({ name, roll: i + 1 }));
+    if (rosterSortMode === "az") indexed.sort((a,b) => a.name.localeCompare(b.name));
+    if (rosterSortMode === "za") indexed.sort((a,b) => b.name.localeCompare(a.name));
+    return indexed;
+  }
+
+  function renderRoster(filter){
+    const tbody = document.getElementById("participantTableBody");
+    const countEl = document.getElementById("rosterCount");
+    if (!tbody) return;
+    const q = (filter || "").trim().toLowerCase();
+    const list = getSortedRoster();
+    const filtered = q ? list.filter(p => p.name.toLowerCase().includes(q)) : list;
+
+    if (countEl) countEl.textContent = q ? `${filtered.length} of ${participants.length}` : `${participants.length} members`;
+
+    if (filtered.length === 0){
+      tbody.innerHTML = `<tr><td colspan="2" class="no-results">No name matches "${escapeHtml(filter)}".</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = filtered.map(p => `
+      <tr><td class="serial-no">${String(p.roll).padStart(2,"0")}</td><td>${escapeHtml(p.name)}</td></tr>
+    `).join("");
+  }
+
+  function downloadCsv(){
+    const rows = [["Roll", "Name"], ...getSortedRoster().map(p => [p.roll, p.name])];
+    const csv = rows.map(r => r.map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "bu-cse-batch13-roster.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    toast("Roster exported as CSV", "fa-file-csv");
+  }
+
+  function wireHomeInteractions(){
+    const searchInput = document.getElementById("participantSearch");
+    if (searchInput) searchInput.addEventListener("input", e => renderRoster(e.target.value));
+
+    const githubCard = document.getElementById("githubCard");
+    if (githubCard) githubCard.href = `https://github.com/${GITHUB_REPO}`;
+
+    const sortBtn = document.getElementById("sortToggle");
+    const sortLabel = document.getElementById("sortLabel");
+    const nameSortBtn = document.getElementById("nameSortBtn");
+    function cycleSort(){
+      rosterSortMode = rosterSortMode === "roll" ? "az" : rosterSortMode === "az" ? "za" : "roll";
+      sortLabel.textContent = rosterSortMode === "roll" ? "Roll order" : rosterSortMode === "az" ? "A → Z" : "Z → A";
+      renderRoster(searchInput ? searchInput.value : "");
+    }
+    if (sortBtn) sortBtn.addEventListener("click", cycleSort);
+    if (nameSortBtn) nameSortBtn.addEventListener("click", cycleSort);
+
+    const exportBtn = document.getElementById("exportCsv");
+    if (exportBtn) exportBtn.addEventListener("click", downloadCsv);
+
+    const printBtn = document.getElementById("printRoster");
+    if (printBtn) printBtn.addEventListener("click", () => window.print());
+
+    const heroSearch = document.getElementById("openSearchHero");
+    if (heroSearch) heroSearch.addEventListener("click", openCmdk);
+
+    renderRoster("");
+    setupScrollspy();
+  }
+
+  /* ---------- Scrollspy on home sections ---------- */
+  let spyObserver = null;
+  function setupScrollspy(){
+    if (spyObserver) spyObserver.disconnect();
+    const targets = [
+      { id: "quick-links", nav: null },
+      { id: "announcements", nav: null },
+      { id: "participants", nav: "navParticipants" }
+    ];
+    spyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting){
+          const match = targets.find(t => t.id === entry.target.id);
+          if (match && match.nav) setActiveNav(match.nav);
+          else if (match) setActiveNav("navHome");
+        }
+      });
+    }, { rootMargin: "-40% 0px -50% 0px" });
+    targets.forEach(t => { const el = document.getElementById(t.id); if (el) spyObserver.observe(el); });
+  }
+
+  /* ---------- Routing (hash-based, so pages are shareable + back/forward works) ---------- */
+  function pathToHash(path){ return path ? `#/page/${encodeURIComponent(path)}` : "#/"; }
+
+  function showHome(skipScroll){
+    const tpl = document.getElementById("homeTemplate");
+    mainEl.innerHTML = "";
+    mainEl.appendChild(tpl.content.cloneNode(true));
+    wireHomeInteractions();
+    setActiveNav("navHome");
+    progressBar.style.width = "0%";
+    if (!skipScroll) window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function scrollToParticipants(){
+    if (!document.getElementById("participants")) showHome(true);
+    requestAnimationFrame(() => {
+      const target = document.getElementById("participants");
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      setActiveNav("navParticipants");
+    });
+  }
+
+  async function loadPage(filePath, skipHash){
+    if (!skipHash) location.hash = pathToHash(filePath);
+    mainEl.innerHTML = `<div class="section"><div class="loading"><i class="fas fa-spinner"></i><p style="margin-top:12px">Loading ${escapeHtml(filePath)}…</p></div></div>`;
+    progressBar.style.width = "30%";
+
+    try{
+      if (location.protocol === "file:"){
+        throw new Error("This page is open as a local file, so the browser blocks fetching other files (CORS). Serve the folder with a local server (e.g. `npx serve`) or via GitHub Pages instead.");
+      }
+      const response = await fetch(filePath);
+      progressBar.style.width = "70%";
+      if (!response.ok) throw new Error(`File not found (HTTP ${response.status})`);
+      const text = await response.text();
+
+      const htmlContent = filePath.endsWith(".md") ? marked.parse(text) : `<div class="txt-block">${escapeHtml(text)}</div>`;
+      const label = pageLabels[filePath] || filePath;
+
+      mainEl.innerHTML = `
+        <div class="section">
+          <div class="page-toolbar">
+            <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> Back to home</button>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span class="breadcrumb">Home / <span>${escapeHtml(label)}</span></span>
+              <button class="tool-btn" id="copyLinkBtn"><i class="fas fa-link"></i> Copy link</button>
+            </div>
+          </div>
+          <div class="markdown-content">${htmlContent}</div>
+        </div>
+      `;
+      document.getElementById("backBtn").addEventListener("click", () => { location.hash = "#/"; });
+      document.getElementById("copyLinkBtn").addEventListener("click", async () => {
+        try{ await navigator.clipboard.writeText(location.href); toast("Link copied to clipboard", "fa-link"); }
+        catch(e){ toast("Couldn't copy — copy the URL manually", "fa-triangle-exclamation"); }
+      });
+      setActiveNav(navFileMap[filePath] || "");
+      progressBar.style.width = "100%";
+      setTimeout(() => progressBar.style.width = "0%", 300);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+    }catch(error){
+      mainEl.innerHTML = `
+        <div class="section">
+          <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> Back to home</button>
+          <div class="markdown-content" style="margin-top:18px">
+            <h2>Couldn't load this page</h2>
+            <p><code>${escapeHtml(filePath)}</code> — ${escapeHtml(error.message)}</p>
+          </div>
+        </div>
+      `;
+      document.getElementById("backBtn").addEventListener("click", () => { location.hash = "#/"; });
+      progressBar.style.width = "0%";
+    }
+  }
+
+  function route(){
+    const hash = location.hash || "#/";
+    const match = hash.match(/^#\/page\/(.+)$/);
+    if (match) loadPage(decodeURIComponent(match[1]), true);
+    else if (hash === "#/participants") scrollToParticipants();
+    else showHome(true);
+  }
+  window.addEventListener("hashchange", route);
+
+  /* ---------- Click delegation ---------- */
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest("[data-nav]");
+    if (el){
+      const path = el.getAttribute("data-nav");
+      closeMobileMenu();
+      location.hash = pathToHash(path);
+      if (path === "" && (location.hash === "#/" )) showHome();
+      return;
+    }
+    if (e.target.closest("#navHomeBtn")){ closeMobileMenu(); location.hash = "#/"; return; }
+    if (e.target.closest("#navParticipants") || e.target.closest("#footerParticipants")){
+      closeMobileMenu(); location.hash = "#/participants"; scrollToParticipants(); return;
+    }
+  });
+
+  /* ---------- Command palette ---------- */
+  const overlay = document.getElementById("cmdkOverlay");
+  const cmdkInput = document.getElementById("cmdkInput");
+  const cmdkList = document.getElementById("cmdkList");
+  let cmdkItems = [];
+  let cmdkSelected = 0;
+  let lastFocused = null;
+
+  function buildCmdkItems(query){
+    const q = (query || "").trim().toLowerCase();
+    const pageMatches = pages.filter(p => !q || p.label.toLowerCase().includes(q)).map(p => ({ type:"page", ...p }));
+    const nameMatches = q ? participants
+      .map((name, i) => ({ name, roll: i+1 }))
+      .filter(p => p.name.toLowerCase().includes(q))
+      .slice(0, 8)
+      .map(p => ({ type:"person", label:p.name, roll:p.roll }))
+      : [];
+    return { pageMatches, nameMatches };
+  }
+
+  function renderCmdk(query){
+    const { pageMatches, nameMatches } = buildCmdkItems(query);
+    cmdkItems = [...pageMatches, ...nameMatches];
+    cmdkSelected = 0;
+
+    if (cmdkItems.length === 0){
+      cmdkList.innerHTML = `<div class="cmdk-empty">No matches for "${escapeHtml(query)}"</div>`;
+      return;
+    }
+
+    let html = "";
+    if (pageMatches.length){
+      html += `<div class="cmdk-group-label">Pages</div>`;
+      pageMatches.forEach((p, i) => {
+        html += `<div class="cmdk-item" data-index="${i}"><i class="fas ${p.icon}"></i><span>${escapeHtml(p.label)}</span><span class="hint">Go to</span></div>`;
+      });
+    }
+    if (nameMatches.length){
+      html += `<div class="cmdk-group-label">Roster</div>`;
+      nameMatches.forEach((p, i) => {
+        html += `<div class="cmdk-item" data-index="${pageMatches.length + i}"><i class="fas fa-user"></i><span>${escapeHtml(p.label)}</span><span class="hint">#${String(p.roll).padStart(2,"0")}</span></div>`;
+      });
+    }
+    cmdkList.innerHTML = html;
+    highlightCmdk();
+  }
+
+  function highlightCmdk(){
+    cmdkList.querySelectorAll(".cmdk-item").forEach(el => {
+      const idx = Number(el.getAttribute("data-index"));
+      el.classList.toggle("selected", idx === cmdkSelected);
+    });
+    const sel = cmdkList.querySelector(".cmdk-item.selected");
+    if (sel) sel.scrollIntoView({ block: "nearest" });
+  }
+
+  function activateCmdkItem(item){
+    if (!item) return;
+    if (item.type === "page"){ closeCmdk(); location.hash = pathToHash(item.path); }
+    else if (item.type === "person"){ closeCmdk(); location.hash = "#/participants"; scrollToParticipants();
+      setTimeout(() => { const input = document.getElementById("participantSearch"); if (input){ input.value = item.label; renderRoster(item.label); } }, 250);
+    }
+  }
+
+  function openCmdk(){
+    lastFocused = document.activeElement;
+    overlay.classList.add("open");
+    cmdkInput.value = "";
+    renderCmdk("");
+    setTimeout(() => cmdkInput.focus(), 10);
+  }
+  function closeCmdk(){
+    overlay.classList.remove("open");
+    if (lastFocused && lastFocused.focus) lastFocused.focus();
+  }
+
+  document.getElementById("openSearchNav").addEventListener("click", openCmdk);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) closeCmdk(); });
+  cmdkInput.addEventListener("input", (e) => renderCmdk(e.target.value));
+  cmdkList.addEventListener("click", (e) => {
+    const item = e.target.closest(".cmdk-item");
+    if (item) activateCmdkItem(cmdkItems[Number(item.getAttribute("data-index"))]);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    const isMac = navigator.platform.toUpperCase().includes("MAC");
+    const modifier = isMac ? e.metaKey : e.ctrlKey;
+    if (modifier && e.key.toLowerCase() === "k"){ e.preventDefault(); overlay.classList.contains("open") ? closeCmdk() : openCmdk(); return; }
+    if (!overlay.classList.contains("open")) return;
+    if (e.key === "Escape"){ closeCmdk(); return; }
+    if (e.key === "ArrowDown"){ e.preventDefault(); cmdkSelected = Math.min(cmdkSelected + 1, cmdkItems.length - 1); highlightCmdk(); return; }
+    if (e.key === "ArrowUp"){ e.preventDefault(); cmdkSelected = Math.max(cmdkSelected - 1, 0); highlightCmdk(); return; }
+    if (e.key === "Enter"){ e.preventDefault(); activateCmdkItem(cmdkItems[cmdkSelected]); return; }
+  });
+
+  /* ---------- Back-to-top ---------- */
+  window.addEventListener("scroll", () => {
+    toTopBtn.classList.toggle("visible", window.scrollY > 480);
+  }, { passive: true });
+  toTopBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+  /* ---------- Init ---------- */
+  document.addEventListener("DOMContentLoaded", route);
+})();
+</script>
+
+</body>
+</html>
